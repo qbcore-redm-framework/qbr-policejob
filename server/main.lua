@@ -1,4 +1,4 @@
-local QBCore = exports['qb-core']:GetCoreObject()
+local QBCore = exports['qbr-core']:GetCoreObject()
 local cuffedPlayers = {}
 local PlayerStatus = {}
 local Casings = {}
@@ -188,7 +188,7 @@ AddEventHandler('police:server:VehicleCall', function(pos, msg, alertTitle, stre
         description = msg
     }
     TriggerClientEvent("police:client:VehicleCall", -1, pos, alertTitle, streetLabel, modelPlate, modelName)
-    TriggerClientEvent("qb-phone:client:addPoliceAlert", -1, alertData)
+    TriggerClientEvent("qbr-phone:client:addPoliceAlert", -1, alertData)
 end)
 
 RegisterServerEvent('police:server:HouseRobberyCall')
@@ -204,7 +204,7 @@ AddEventHandler('police:server:HouseRobberyCall', function(coords, message, gend
         description = message
     }
     TriggerClientEvent("police:client:HouseRobberyCall", -1, coords, message, gender, streetLabel)
-    TriggerClientEvent("qb-phone:client:addPoliceAlert", -1, alertData)
+    TriggerClientEvent("qbr-phone:client:addPoliceAlert", -1, alertData)
 end)
 
 RegisterServerEvent('police:server:SendEmergencyMessage')
@@ -221,7 +221,7 @@ AddEventHandler('police:server:SendEmergencyMessage', function(coords, message)
         },
         description = message
     }
-    TriggerClientEvent("qb-phone:client:addPoliceAlert", -1, alertData)
+    TriggerClientEvent("qbr-phone:client:addPoliceAlert", -1, alertData)
     TriggerClientEvent('police:server:SendEmergencyMessageCheck', -1, MainPlayer, message, coords)
 end)
 
@@ -446,7 +446,7 @@ AddEventHandler('police:server:SendPoliceEmergencyAlert', function(streetLabel, 
         coords = coords
     }
     TriggerEvent('wf-alerts:svNotify', dispatchData)
-    --TriggerClientEvent("qb-phone:client:addPoliceAlert", -1, alertData)
+    --TriggerClientEvent("qbr-phone:client:addPoliceAlert", -1, alertData)
 end) ]]
 
 QBCore.Functions.CreateCallback('police:server:isPlayerDead', function(source, cb, playerId)
@@ -683,7 +683,7 @@ QBCore.Commands.Add("palert", "Make a police alert", {{
         if args[1] ~= nil then
             local msg = table.concat(args, " ")
             TriggerClientEvent("chatMessage", -1, "POLICE ALERT", "error", msg)
-            TriggerEvent("qb-log:server:CreateLog", "palert", "Police alert", "blue",
+            TriggerEvent("qbr-log:server:CreateLog", "palert", "Police alert", "blue",
                 "**" .. GetPlayerName(source) .. "** (CitizenID: " .. Player.PlayerData.citizenid .. " | ID: " .. source ..
                     ") **Alert:** " .. msg, false)
             TriggerClientEvent('police:PlaySound', -1)
@@ -861,7 +861,7 @@ QBCore.Commands.Add("911", "Send a report to emergency services", {{
 
     if Player.Functions.GetItemByName("phone") ~= nil then
         TriggerClientEvent("police:client:SendEmergencyMessage", source, message)
-        TriggerEvent("qb-log:server:CreateLog", "911", "911 alert", "blue",
+        TriggerEvent("qbr-log:server:CreateLog", "911", "911 alert", "blue",
             "**" .. GetPlayerName(source) .. "** (CitizenID: " .. Player.PlayerData.citizenid .. " | ID: " .. source ..
                 ") **Alert:** " .. message, false)
     else

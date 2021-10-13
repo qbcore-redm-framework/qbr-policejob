@@ -1,4 +1,4 @@
-QBCore = exports['qb-core']:GetCoreObject()
+QBCore = exports['qbr-core']:GetCoreObject()
 isHandcuffed = false
 cuffType = 1
 isEscorted = false
@@ -43,7 +43,7 @@ AddEventHandler('police:client:sendBillingMail', function(amount)
             gender = "Mrs."
         end
         local charinfo = QBCore.Functions.GetPlayerData().charinfo
-        TriggerServerEvent('qb-phone:server:sendNewMail', {
+        TriggerServerEvent('qbr-phone:server:sendNewMail', {
             sender = "Central Judicial Collection Agency",
             subject = "Debt collection",
             message = "Dear " .. gender .. " " .. charinfo.lastname .. ",<br /><br />The Central Judicial Collection Agency (CJCA) charged the fines you received from the police.<br />There is <strong>$"..amount.."</strong> withdrawn from your account.<br /><br />Kind regards,<br />Mr. I.K. Graai",
@@ -74,7 +74,7 @@ AddEventHandler('police:client:SendPoliceEmergencyAlert', function()
     local MyId = GetPlayerServerId(PlayerId())
 
     TriggerServerEvent("police:server:SendPoliceEmergencyAlert", pos, QBCore.Functions.GetPlayerData().metadata["callsign"])
-    TriggerServerEvent('qb-policealerts:server:AddPoliceAlert', {
+    TriggerServerEvent('qbr-policealerts:server:AddPoliceAlert', {
         timeOut = 10000,
         alertTitle = alertTitle,
         coords = {
@@ -157,7 +157,7 @@ AddEventHandler('police:client:GunShotAlert', function(streetLabel, isAutomatic,
             }
         end
 
-        TriggerEvent('qb-policealerts:client:AddPoliceAlert', {
+        TriggerEvent('qbr-policealerts:client:AddPoliceAlert', {
             timeOut = 4000,
             alertTitle = blipText,
             coords = {
@@ -197,7 +197,7 @@ end)
 RegisterNetEvent('police:client:VehicleCall')
 AddEventHandler('police:client:VehicleCall', function(pos, alertTitle, streetLabel, modelPlate, modelName)
     if PlayerJob.name == 'police' and onDuty then
-        TriggerEvent('qb-policealerts:client:AddPoliceAlert', {
+        TriggerEvent('qbr-policealerts:client:AddPoliceAlert', {
             timeOut = 4000,
             alertTitle = alertTitle,
             coords = {
@@ -249,7 +249,7 @@ end)
 RegisterNetEvent('police:client:HouseRobberyCall')
 AddEventHandler('police:client:HouseRobberyCall', function(coords, msg, gender, streetLabel)
     if PlayerJob.name == 'police' and onDuty then
-        TriggerEvent('qb-policealerts:client:AddPoliceAlert', {
+        TriggerEvent('qbr-policealerts:client:AddPoliceAlert', {
             timeOut = 5000,
             alertTitle = "Burglary attempt",
             coords = {
@@ -299,7 +299,7 @@ RegisterNetEvent('112:client:SendPoliceAlert')
 AddEventHandler('112:client:SendPoliceAlert', function(notifyType, data, blipSettings)
     if PlayerJob.name == 'police' and onDuty then
         if notifyType == "flagged" then
-            TriggerEvent('qb-policealerts:client:AddPoliceAlert', {
+            TriggerEvent('qbr-policealerts:client:AddPoliceAlert', {
                 timeOut = 5000,
                 alertTitle = "Burglary attempt",
                 details = {
@@ -350,7 +350,7 @@ end)
 RegisterNetEvent('police:client:PoliceAlertMessage')
 AddEventHandler('police:client:PoliceAlertMessage', function(title, streetLabel, coords)
     if PlayerJob.name == 'police' and onDuty then
-        TriggerEvent('qb-policealerts:client:AddPoliceAlert', {
+        TriggerEvent('qbr-policealerts:client:AddPoliceAlert', {
             timeOut = 5000,
             alertTitle = title,
             details = {

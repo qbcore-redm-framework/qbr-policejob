@@ -392,7 +392,7 @@ AddEventHandler('police:client:GetKidnappedDragger', function(playerId)
             isEscorting = false
         end
         TriggerEvent('hospital:client:SetEscortingState', isEscorting)
-        TriggerEvent('qb-kidnapping:client:SetKidnapping', isEscorting)
+        TriggerEvent('qbr-kidnapping:client:SetKidnapping', isEscorting)
     end)
 end)
 

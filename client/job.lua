@@ -396,7 +396,7 @@ function TakeOutImpound(vehicle)
     currentFuel = vehicle.fuel
     local coords = Config.Locations["impound"][currentGarage]
     QBCore.Functions.SpawnVehicle(vehicle.vehicle, function(veh)
-        QBCore.Functions.TriggerCallback('qb-garage:server:GetVehicleProperties', function(properties)
+        QBCore.Functions.TriggerCallback('qbr-garage:server:GetVehicleProperties', function(properties)
             QBCore.Functions.SetVehicleProperties(veh, properties)
             SetVehicleNumberPlateText(veh, vehicle.plate)
             SetEntityHeading(veh, coords.w)
