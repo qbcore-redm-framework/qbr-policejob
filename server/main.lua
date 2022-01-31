@@ -16,7 +16,7 @@ end)
 RegisterServerEvent('police:server:TakeOutImpound')
 AddEventHandler('police:server:TakeOutImpound', function(plate)
     local src = source
-    exports.oxmysql:execute('UPDATE player_vehicles SET state = ? WHERE plate  = ?', {0, plate})
+    MySQL.Async.fetchAll('UPDATE player_vehicles SET state = ? WHERE plate  = ?', {0, plate})
     TriggerClientEvent('QBCore:Notify', src, "Vehicle is taken out of Impound!")
 end)
 
@@ -308,12 +308,12 @@ AddEventHandler('police:server:Impound', function(plate, fullImpound, price, bod
     local price = price ~= nil and price or 0
     if IsVehicleOwned(plate) then
         if not fullImpound then
-            exports.oxmysql:execute(
+            MySQL.Async.fetchAll(
                 'UPDATE player_vehicles SET state = ?, depotprice = ?, body = ?, engine = ?, fuel = ? WHERE plate = ?',
                 {0, price, body, engine, fuel, plate})
             TriggerClientEvent('QBCore:Notify', src, "Vehicle taken into depot for $" .. price .. "!")
         else
-            exports.oxmysql:execute(
+            MySQL.Async.fetchAll(
                 'UPDATE player_vehicles SET state = ?, body = ?, engine = ?, fuel = ? WHERE plate = ?',
                 {2, body, engine, fuel, plate})
             TriggerClientEvent('QBCore:Notify', src, "Vehicle completely seized!")
@@ -526,13 +526,13 @@ function CreateObjectId()
 end
 
 function IsVehicleOwned(plate)
-    local result = exports.oxmysql:scalarSync('SELECT plate FROM player_vehicles WHERE plate = ?', {plate})
+    local result = MySQL.Sync.fetchScalar('SELECT plate FROM player_vehicles WHERE plate = ?', {plate})
     return result
 end
 
 QBCore.Functions.CreateCallback('police:GetImpoundedVehicles', function(source, cb)
     local vehicles = {}
-    exports.oxmysql:execute('SELECT * FROM player_vehicles WHERE state = ?', {2}, function(result)
+    MySQL.Async.fetchAll('SELECT * FROM player_vehicles WHERE state = ?', {2}, function(result)
         if result[1] ~= nil then
             vehicles = result
         end
