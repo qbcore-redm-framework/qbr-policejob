@@ -1,3 +1,4 @@
+-- Variables
 QBCore = exports['qbr-core']:GetCoreObject()
 isHandcuffed = false
 cuffType = 1
@@ -5,55 +6,72 @@ isEscorted = false
 draggerId = 0
 PlayerJob = {}
 onDuty = false
+local DutyBlips = {}
 
-Citizen.CreateThread(function()
-    for k, station in pairs(Config.Locations["stations"]) do
-        local blip = N_0x554d9d53f696d002(1664425300, station.coords.x, station.coords.y, station.coords.z)
-        SetBlipSprite(blip, -1154452417, 1)
-        Citizen.InvokeNative(0x9CB1A1623062F402, blip, station.label)
-    end
-end)
-
-RegisterNetEvent('QBCore:Client:OnJobUpdate')
-AddEventHandler('QBCore:Client:OnJobUpdate', function(JobInfo)
-    PlayerJob = JobInfo
-    if JobInfo.name == "police" then
-        if PlayerJob.onduty then
-            TriggerServerEvent("QBCore:ToggleDuty")
-            onDuty = false
+-- Functions
+local function CreateDutyBlips(playerId, playerLabel, playerJob, playerLocation)
+    local ped = GetPlayerPed(playerId)
+    local blip = GetBlipFromEntity(ped)
+    if not DoesBlipExist(blip) then
+        if NetworkIsPlayerActive(playerId) then
+            blip = Citizen.InvokeNative(0x30822554, ped)
+        else
+            blip = Citizen.InvokeNative(0x554D9D53F696D002, 1664425300, playerLocation.x, playerLocation.y, playerLocation.z)
         end
+        SetBlipSprite(blip, 54149631, 1)
+        SetBlipScale(blip, 0.7)
+        Citizen.InvokeNative(0x9CB1A1623062F402, blip, playerLabel)
+        DutyBlips[#DutyBlips+1] = blip
     end
-end)
 
-RegisterNetEvent('QBCore:Client:OnPlayerLoaded')
+    if GetBlipFromEntity(PlayerPedId()) == blip then
+        -- Ensure we remove our own blip.
+        RemoveBlip(blip)
+    end
+end
+
+function LocalInput(text, number, window)
+    AddTextEntry('FMMC_MPM_NA', text)
+    DisplayOnscreenKeyboard(1, "FMMC_MPM_NA", "", windows or "", "", "", "", number or 30)
+  
+    while (UpdateOnscreenKeyboard() == 0) do
+        DisableAllControlActions(0)
+        Wait(0)
+    end
+  
+    if (GetOnscreenKeyboardResult()) then
+        local result = GetOnscreenKeyboardResult()
+        return result
+    end
+end
+
+-- Events
 AddEventHandler('QBCore:Client:OnPlayerLoaded', function()
-    PlayerJob = QBCore.Functions.GetPlayerData().job
-    onDuty = QBCore.Functions.GetPlayerData().job.onduty
+    local player = QBCore.Functions.GetPlayerData()
+    PlayerJob = player.job
+    onDuty = player.job.onduty
     isHandcuffed = false
     TriggerServerEvent("QBCore:Server:SetMetaData", "ishandcuffed", false)
     TriggerServerEvent("police:server:SetHandcuffStatus", false)
+    TriggerServerEvent("police:server:UpdateBlips")
     TriggerServerEvent("police:server:UpdateCurrentCops")
-end)
 
-RegisterNetEvent('police:client:sendBillingMail')
-AddEventHandler('police:client:sendBillingMail', function(amount)
-    SetTimeout(math.random(2500, 4000), function()
-        local gender = "Mr."
-        if QBCore.Functions.GetPlayerData().charinfo.gender == 1 then
-            gender = "Mrs."
+    if PlayerJob and PlayerJob.name ~= "police" then
+        if DutyBlips then
+            for k, v in pairs(DutyBlips) do
+                RemoveBlip(v)
+            end
         end
-        local charinfo = QBCore.Functions.GetPlayerData().charinfo
-        TriggerServerEvent('qbr-phone:server:sendNewMail', {
-            sender = "Central Judicial Collection Agency",
-            subject = "Debt collection",
-            message = "Dear " .. gender .. " " .. charinfo.lastname .. ",<br /><br />The Central Judicial Collection Agency (CJCA) charged the fines you received from the police.<br />There is <strong>$"..amount.."</strong> withdrawn from your account.<br /><br />Kind regards,<br />Mr. I.K. Graai",
-            button = {}
-        })
-    end)
+        DutyBlips = {}
+    end
+
+    if PlayerJob and PlayerJob.name == 'police' then 
+        CreatePrompts()
+    end
 end)
 
-RegisterNetEvent('QBCore:Client:OnPlayerUnload')
-AddEventHandler('QBCore:Client:OnPlayerUnload', function()
+RegisterNetEvent('QBCore:Client:OnPlayerUnload', function()
+    TriggerServerEvent('police:server:UpdateBlips')
     TriggerServerEvent("police:server:SetHandcuffStatus", false)
     TriggerServerEvent("police:server:UpdateCurrentCops")
     isHandcuffed = false
@@ -61,371 +79,95 @@ AddEventHandler('QBCore:Client:OnPlayerUnload', function()
     onDuty = false
     ClearPedTasks(PlayerPedId())
     DetachEntity(PlayerPedId(), true, false)
+    if DutyBlips then
+        for k, v in pairs(DutyBlips) do
+            RemoveBlip(v)
+        end
+        DutyBlips = {}
+    end
 end)
 
-RegisterNetEvent('police:client:SendPoliceEmergencyAlert')
-AddEventHandler('police:client:SendPoliceEmergencyAlert', function()
-    local pos = GetEntityCoords(PlayerPedId())
-    local alertTitle = "Assistance colleague"
-    if PlayerJob.name == "ambulance" or PlayerJob.name == "doctor" then
-        alertTitle = "Assistance " .. PlayerJob.label
+RegisterNetEvent('QBCore:Client:OnJobUpdate', function(JobInfo)
+    if JobInfo.name == "police" and PlayerJob.name ~= "police" then
+        CreatePrompts()
+        if JobInfo.onduty then
+            TriggerServerEvent("QBCore:ToggleDuty")
+            onDuty = false
+        end
     end
 
-    local MyId = GetPlayerServerId(PlayerId())
-
-    TriggerServerEvent("police:server:SendPoliceEmergencyAlert", pos, QBCore.Functions.GetPlayerData().metadata["callsign"])
-    TriggerServerEvent('qbr-policealerts:server:AddPoliceAlert', {
-        timeOut = 10000,
-        alertTitle = alertTitle,
-        coords = {
-            x = pos.x,
-            y = pos.y,
-            z = pos.z,
-        },
-        details = {
-            [1] = {
-                icon = '<i class="fas fa-passport"></i>',
-                detail = MyId .. ' | ' .. QBCore.Functions.GetPlayerData().charinfo.firstname .. ' ' .. QBCore.Functions.GetPlayerData().charinfo.lastname,
-            },
-        },
-        callSign = QBCore.Functions.GetPlayerData().metadata["callsign"],
-    }, true)
-end)
-
-RegisterNetEvent('police:PlaySound')
-AddEventHandler('police:PlaySound', function()
-    PlaySound(-1, "Lose_1st", "GTAO_FM_Events_Soundset", 0, 0, 1)
-end)
-
-RegisterNetEvent('police:client:PoliceEmergencyAlert')
-AddEventHandler('police:client:PoliceEmergencyAlert', function(callsign, streetLabel, coords)
-    if (PlayerJob.name == 'police' or PlayerJob.name == 'ambulance' or PlayerJob.name == 'doctor') and onDuty then
-        local transG = 250
-        local blip = AddBlipForCoord(coords.x, coords.y, coords.z)
-        SetBlipSprite(blip, 487)
-        SetBlipColour(blip, 4)
-        SetBlipDisplay(blip, 4)
-        SetBlipAlpha(blip, transG)
-        SetBlipScale(blip, 1.2)
-        SetBlipFlashes(blip, true)
-        BeginTextCommandSetBlipName('STRING')
-        AddTextComponentString("Assistance Colleague")
-        EndTextCommandSetBlipName(blip)
-        while transG ~= 0 do
-            Wait(180 * 4)
-            transG = transG - 1
-            SetBlipAlpha(blip, transG)
-            if transG == 0 then
-                SetBlipSprite(blip, 2)
-                RemoveBlip(blip)
-                return
+    if JobInfo.name ~= "police" then
+        if DutyBlips then
+            for k, v in pairs(DutyBlips) do
+                RemoveBlip(v)
             end
         end
+        DutyBlips = {}
     end
+    PlayerJob = JobInfo
+    TriggerServerEvent("police:server:UpdateBlips")
 end)
 
-RegisterNetEvent('police:client:GunShotAlert')
-AddEventHandler('police:client:GunShotAlert', function(streetLabel, isAutomatic, fromVehicle, coords, vehicleInfo)
-    if PlayerJob.name == 'police' and onDuty then  
-        local msg = ""
-        local blipSprite = 313
-        local blipText = "Shots fired"
-        local MessageDetails = {}
-        if fromVehicle then
-            blipText = "Shots fired from a vehicle"
-            MessageDetails = {
-                [1] = {
-                    icon = '<i class="fas fa-car"></i>',
-                    detail = vehicleInfo.name,
-                },
-                [2] = {
-                    icon = '<i class="fas fa-closed-captioning"></i>',
-                    detail = vehicleInfo.plate,
-                },
-                [3] = {
-                    icon = '<i class="fas fa-globe-europe"></i>',
-                    detail = streetLabel,
-                },
-            }
-        else
-            blipText = "Shots fired"
-            MessageDetails = {
-                [1] = {
-                    icon = '<i class="fas fa-globe-europe"></i>',
-                    detail = streetLabel,
-                },
-            }
+RegisterNetEvent('police:client:sendBillingMail', function(amount)
+    SetTimeout(math.random(2500, 4000), function()
+        local gender = Lang:t('info.mr')
+        if QBCore.Functions.GetPlayerData().charinfo.gender == 1 then
+            gender = Lang:t('info.mrs')
         end
-
-        TriggerEvent('qbr-policealerts:client:AddPoliceAlert', {
-            timeOut = 4000,
-            alertTitle = blipText,
-            coords = {
-                x = coords.x,
-                y = coords.y,
-                z = coords.z,
-            },
-            details = MessageDetails,
-            callSign = QBCore.Functions.GetPlayerData().metadata["callsign"],
+        local charinfo = QBCore.Functions.GetPlayerData().charinfo
+        TriggerServerEvent('qb-phone:server:sendNewMail', {
+            sender = Lang:t('email.sender'),
+            subject = Lang:t('email.subject'),
+            message = Lang:t('email.message', {value = gender, value2 = charinfo.lastname, value3 = amount}),
+            button = {}
         })
-
-        PlaySound(-1, "Lose_1st", "GTAO_FM_Events_Soundset", 0, 0, 1)
-        local transG = 250
-        local blip = AddBlipForCoord(coords.x, coords.y, coords.z)
-        SetBlipSprite(blip, blipSprite)
-        SetBlipColour(blip, 0)
-        SetBlipDisplay(blip, 4)
-        SetBlipAlpha(blip, transG)
-        SetBlipScale(blip, 0.8)
-        SetBlipAsShortRange(blip, false)
-        BeginTextCommandSetBlipName('STRING')
-        AddTextComponentString(blipText)
-        EndTextCommandSetBlipName(blip)
-        while transG ~= 0 do
-            Wait(180 * 4)
-            transG = transG - 1
-            SetBlipAlpha(blip, transG)
-            if transG == 0 then
-                SetBlipSprite(blip, 2)
-                RemoveBlip(blip)
-                return
-            end
-        end
-    end
+    end)
 end)
 
-RegisterNetEvent('police:client:VehicleCall')
-AddEventHandler('police:client:VehicleCall', function(pos, alertTitle, streetLabel, modelPlate, modelName)
-    if PlayerJob.name == 'police' and onDuty then
-        TriggerEvent('qbr-policealerts:client:AddPoliceAlert', {
-            timeOut = 4000,
-            alertTitle = alertTitle,
-            coords = {
-                x = pos.x,
-                y = pos.y,
-                z = pos.z,
-            },
-            details = {
-                [1] = {
-                    icon = '<i class="fas fa-car"></i>',
-                    detail = modelName,
-                },
-                [2] = {
-                    icon = '<i class="fas fa-closed-captioning"></i>',
-                    detail = modelPlate,
-                },
-                [3] = {
-                    icon = '<i class="fas fa-globe-europe"></i>',
-                    detail = streetLabel,
-                },
-            },
-            callSign = QBCore.Functions.GetPlayerData().metadata["callsign"],
-        })
-        PlaySound(-1, "Lose_1st", "GTAO_FM_Events_Soundset", 0, 0, 1)
-        local transG = 250
-        local blip = AddBlipForCoord(pos.x, pos.y, pos.z)
-        SetBlipSprite(blip, 380)
-        SetBlipColour(blip, 1)
-        SetBlipDisplay(blip, 4)
-        SetBlipAlpha(blip, transG)
-        SetBlipScale(blip, 1.0)
-        SetBlipAsShortRange(blip, false)
-        BeginTextCommandSetBlipName('STRING')
-        AddTextComponentString("Alert: Vehicle burglary")
-        EndTextCommandSetBlipName(blip)
-        while transG ~= 0 do
-            Wait(180 * 4)
-            transG = transG - 1
-            SetBlipAlpha(blip, transG)
-            if transG == 0 then
-                SetBlipSprite(blip, 2)
-                RemoveBlip(blip)
-                return
+RegisterNetEvent('police:client:UpdateBlips', function(players)
+    if Config.ShowBlips then
+        if PlayerJob and (PlayerJob.name == 'police' or PlayerJob.name == 'ambulance') and onDuty then
+            if DutyBlips then
+                for k, v in pairs(DutyBlips) do
+                    RemoveBlip(v)
+                end
             end
-        end
-    end
-end)
-
-RegisterNetEvent('police:client:HouseRobberyCall')
-AddEventHandler('police:client:HouseRobberyCall', function(coords, msg, gender, streetLabel)
-    if PlayerJob.name == 'police' and onDuty then
-        TriggerEvent('qbr-policealerts:client:AddPoliceAlert', {
-            timeOut = 5000,
-            alertTitle = "Burglary attempt",
-            coords = {
-                x = coords.x,
-                y = coords.y,
-                z = coords.z,
-            },
-            details = {
-                [1] = {
-                    icon = '<i class="fas fa-venus-mars"></i>',
-                    detail = gender,
-                },
-                [2] = {
-                    icon = '<i class="fas fa-globe-europe"></i>',
-                    detail = streetLabel,
-                },
-            },
-            callSign = QBCore.Functions.GetPlayerData().metadata["callsign"],
-        })
-
-        PlaySound(-1, "Lose_1st", "GTAO_FM_Events_Soundset", 0, 0, 1)
-        local transG = 250
-        local blip = AddBlipForCoord(coords.x, coords.y, coords.z)
-        SetBlipSprite(blip, 411)
-        SetBlipColour(blip, 1)
-        SetBlipDisplay(blip, 4)
-        SetBlipAlpha(blip, transG)
-        SetBlipScale(blip, 0.7)
-        SetBlipAsShortRange(blip, false)
-        BeginTextCommandSetBlipName('STRING')
-        AddTextComponentString("Alert: Burglary house")
-        EndTextCommandSetBlipName(blip)
-        while transG ~= 0 do
-            Wait(180 * 4)
-            transG = transG - 1
-            SetBlipAlpha(blip, transG)
-            if transG == 0 then
-                SetBlipSprite(blip, 2)
-                RemoveBlip(blip)
-                return
-            end
-        end
-    end
-end)
-
-RegisterNetEvent('112:client:SendPoliceAlert')
-AddEventHandler('112:client:SendPoliceAlert', function(notifyType, data, blipSettings)
-    if PlayerJob.name == 'police' and onDuty then
-        if notifyType == "flagged" then
-            TriggerEvent('qbr-policealerts:client:AddPoliceAlert', {
-                timeOut = 5000,
-                alertTitle = "Burglary attempt",
-                details = {
-                    [1] = {
-                        icon = '<i class="fas fa-video"></i>',
-                        detail = data.camId,
-                    },
-                    [2] = {
-                        icon = '<i class="fas fa-closed-captioning"></i>',
-                        detail = data.plate,
-                    },
-                    [3] = {
-                        icon = '<i class="fas fa-globe-europe"></i>',
-                        detail = data.streetLabel,
-                    },
-                },
-                callSign = QBCore.Functions.GetPlayerData().metadata["callsign"],
-            })
-            RadarSound()
-        end
-
-        if blipSettings ~= nil then
-            local transG = 250
-            local blip = AddBlipForCoord(blipSettings.x, blipSettings.y, blipSettings.z)
-            SetBlipSprite(blip, blipSettings.sprite)
-            SetBlipColour(blip, blipSettings.color)
-            SetBlipDisplay(blip, 4)
-            SetBlipAlpha(blip, transG)
-            SetBlipScale(blip, blipSettings.scale)
-            SetBlipAsShortRange(blip, false)
-            BeginTextCommandSetBlipName('STRING')
-            AddTextComponentString(blipSettings.text)
-            EndTextCommandSetBlipName(blip)
-            while transG ~= 0 do
-                Wait(180 * 4)
-                transG = transG - 1
-                SetBlipAlpha(blip, transG)
-                if transG == 0 then
-                    SetBlipSprite(blip, 2)
-                    RemoveBlip(blip)
-                    return
+            DutyBlips = {}
+            if players then
+                for k, data in pairs(players) do
+                    local id = GetPlayerFromServerId(data.source)
+                    CreateDutyBlips(id, data.label, data.job, data.location)
                 end
             end
         end
     end
 end)
 
-RegisterNetEvent('police:client:PoliceAlertMessage')
-AddEventHandler('police:client:PoliceAlertMessage', function(title, streetLabel, coords)
-    if PlayerJob.name == 'police' and onDuty then
-        TriggerEvent('qbr-policealerts:client:AddPoliceAlert', {
-            timeOut = 5000,
-            alertTitle = title,
-            details = {
-                [1] = {
-                    icon = '<i class="fas fa-globe-europe"></i>',
-                    detail = streetLabel,
-                },
-            },
-            callSign = QBCore.Functions.GetPlayerData().metadata["callsign"],
-        })
+RegisterNetEvent('police:client:policeAlert', function(coords, text)
+    QBCore.Functions.Notify({text = text, caption = street1name.. ' ' ..street2name}, 'police')
+    local transG = 250
 
-        PlaySound(-1, "Lose_1st", "GTAO_FM_Events_Soundset", 0, 0, 1)
-        local transG = 100
-        local blip = AddBlipForRadius(coords.x, coords.y, coords.z, 100.0)
-        SetBlipSprite(blip, 9)
-        SetBlipColour(blip, 1)
-        SetBlipAlpha(blip, transG)
-        SetBlipAsShortRange(blip, false)
-        BeginTextCommandSetBlipName('STRING')
-        AddTextComponentString("911 - "..title)
-        EndTextCommandSetBlipName(blip)
-        while transG ~= 0 do
-            Wait(180 * 4)
-            transG = transG - 1
-            SetBlipAlpha(blip, transG)
-            if transG == 0 then
-                SetBlipSprite(blip, 2)
-                RemoveBlip(blip)
-                return
-            end
+    local blip = Citizen.InvokeNative(0x554D9D53F696D002, 1664425300, coords.x, coords.y, coords.z)
+    local blip2 = Citizen.InvokeNative(0x554D9D53F696D002, 1664425300, coords.x, coords.y, coords.z)
+    local blipText = Lang:t('info.blip_text', {value = text})
+    SetBlipSprite(blip, -693644997, 1)
+    SetBlipSprite(blip2, -184692826, 1)
+    Citizen.InvokeNative(0x662D364ABF16DE2F, blip, GetHashKey('BLIP_MODIFIER_AREA_PULSE'))
+    Citizen.InvokeNative(0x662D364ABF16DE2F, blip2, GetHashKey('BLIP_MODIFIER_AREA_PULSE'))
+    SetBlipScale(blip, 0.8)
+    SetBlipScale(blip2, 2.0)
+    Citizen.InvokeNative(0x9CB1A1623062F402, blip, blipText)
+    while transG ~= 0 do
+        Wait(180 * 4)
+        transG = transG - 1
+        if transG == 0 then
+            RemoveBlip(blip)
+            return
         end
     end
 end)
 
-RegisterNetEvent('police:server:SendEmergencyMessageCheck')
-AddEventHandler('police:server:SendEmergencyMessageCheck', function(MainPlayer, message, coords)
-    local PlayerData = QBCore.Functions.GetPlayerData()
-    if ((PlayerData.job.name == "police" or PlayerData.job.name == "ambulance" or PlayerData.job.name == "doctor") and onDuty) then
-        TriggerEvent('chatMessage', "911 ALERT - " .. MainPlayer.PlayerData.charinfo.firstname .. " " .. MainPlayer.PlayerData.charinfo.lastname .. " ("..MainPlayer.PlayerData.source..")", "warning", message)
-        TriggerEvent("police:client:EmergencySound")
-        local transG = 250
-        local blip = AddBlipForCoord(coords.x, coords.y, coords.z)
-        SetBlipSprite(blip, 280)
-        SetBlipColour(blip, 4)
-        SetBlipDisplay(blip, 4)
-        SetBlipAlpha(blip, transG)
-        SetBlipScale(blip, 0.9)
-        SetBlipAsShortRange(blip, false)
-        BeginTextCommandSetBlipName('STRING')
-        AddTextComponentString("911 alert")
-        EndTextCommandSetBlipName(blip)
-        while transG ~= 0 do
-            Wait(180 * 4)
-            transG = transG - 1
-            SetBlipAlpha(blip, transG)
-            if transG == 0 then
-                SetBlipSprite(blip, 2)
-                RemoveBlip(blip)
-                return
-            end
-        end
-    end
-end)
-
-RegisterNetEvent('police:client:Send112AMessage')
-AddEventHandler('police:client:Send112AMessage', function(message)
-    local PlayerData = QBCore.Functions.GetPlayerData()
-    if ((PlayerData.job.name == "police" or PlayerData.job.name == "ambulance") and onDuty) then
-        TriggerEvent('chatMessage', "ANONYMOUS REPORT", "warning", message)
-        TriggerEvent("police:client:EmergencySound")
-    end
-end)
-
-RegisterNetEvent('police:client:SendToJail')
-AddEventHandler('police:client:SendToJail', function(time)
+RegisterNetEvent('police:client:SendToJail', function(time)
     TriggerServerEvent("police:server:SetHandcuffStatus", false)
     isHandcuffed = false
     isEscorted = false
@@ -434,41 +176,8 @@ AddEventHandler('police:client:SendToJail', function(time)
     TriggerEvent("prison:client:Enter", time)
 end)
 
-function RadarSound()
-    PlaySoundFrontend( -1, "Beep_Green", "DLC_HEIST_HACKING_SNAKE_SOUNDS", 1 )
-    Citizen.Wait(100)
-    PlaySoundFrontend( -1, "Beep_Red", "DLC_HEIST_HACKING_SNAKE_SOUNDS", 1 )
-    Citizen.Wait(100)
-    PlaySoundFrontend( -1, "Beep_Green", "DLC_HEIST_HACKING_SNAKE_SOUNDS", 1 )
-    Citizen.Wait(100)
-    PlaySoundFrontend( -1, "Beep_Red", "DLC_HEIST_HACKING_SNAKE_SOUNDS", 1 )
-    Citizen.Wait(100)
-end
-
-function GetClosestPlayer()
-    local closestPlayers = QBCore.Functions.GetPlayersFromCoords()
-    local closestDistance = -1
-    local closestPlayer = -1
-    local coords = GetEntityCoords(PlayerPedId())
-
-    for i=1, #closestPlayers, 1 do
-        if closestPlayers[i] ~= PlayerId() then
-            local pos = GetEntityCoords(GetPlayerPed(closestPlayers[i]))
-            local distance = #(pos - coords)
-
-            if closestDistance == -1 or closestDistance > distance then
-                closestPlayer = closestPlayers[i]
-                closestDistance = distance
-            end
-        end
-	end
-
-	return closestPlayer, closestDistance
-end
-
-function loadAnimDict(dict)
-    while (not HasAnimDictLoaded(dict)) do
-        RequestAnimDict(dict)
-        Citizen.Wait(10)
-    end
-end
+RegisterNetEvent('police:client:SendPoliceEmergencyAlert', function()
+    local Player = QBCore.Functions.GetPlayerData()
+    TriggerServerEvent('police:server:policeAlert', Lang:t('info.officer_down', {lastname = Player.charinfo.lastname, callsign = Player.metadata.callsign}))
+    TriggerServerEvent('hospital:server:ambulanceAlert', Lang:t('info.officer_down', {lastname = Player.charinfo.lastname, callsign = Player.metadata.callsign}))
+end)
