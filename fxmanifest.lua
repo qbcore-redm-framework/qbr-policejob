@@ -5,16 +5,22 @@ rdr3_warning 'I acknowledge that this is a prerelease build of RedM, and I am aw
 description 'QBR-PoliceJob'
 version '1.0.0'
 
-shared_script {
-	'config.lua'
+shared_scripts {
+    'config.lua',
+    '@qbr-core/shared/locale.lua',
+    'locales/en.lua' -- Change this to your preferred language
 }
 
 client_scripts {
 	'client/main.lua',
+	'client/camera.lua',
 	'client/interactions.lua',
 	'client/job.lua',
-	'client/gui.lua',
-	'client/objects.lua'
+	'client/heli.lua',
+	--'client/anpr.lua',
+	'client/evidence.lua',
+	'client/objects.lua',
+	'client/tracker.lua'
 }
 
 server_scripts {
@@ -22,8 +28,4 @@ server_scripts {
 	'server/main.lua'
 }
 
-exports {
-	'IsHandcuffed',
-}
-
-dependency 'qbr-core'
+lua54 'yes'
