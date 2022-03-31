@@ -93,7 +93,7 @@ end
 local function SetWeaponSeries()
     for k, v in pairs(Config.Items.items) do
         if k < 6 then
-            Config.Items.items[k].info.serie = tostring(QBCore.Shared.RandomInt(2) .. QBCore.Shared.RandomStr(3) .. QBCore.Shared.RandomInt(1) .. QBCore.Shared.RandomStr(2) .. QBCore.Shared.RandomInt(3) .. QBCore.Shared.RandomStr(4))
+            Config.Items.items[k].info.serie = tostring(exports['qbr-core']:RandomInt(2) .. exports['qbr-core']:RandomStr(3) .. exports['qbr-core']:RandomInt(1) .. exports['qbr-core']:RandomStr(2) .. exports['qbr-core']:RandomInt(3) .. exports['qbr-core']:RandomStr(4))
         end
     end
 end
@@ -211,15 +211,16 @@ CreateThread(function()
         Citizen.InvokeNative(0x9CB1A1623062F402, StationBlip, v.label)
         -- Citizen.ReturnResultAnyway()
     end
-
-    for k,v in pairs(QBCore.Shared.Weapons) do
+    local sharedItems = exports['qbr-core']:GetItems()
+    local sharedWeapons = exports['qbr-core']:GetWeapons()
+    for k,v in pairs(sharedWeapons) do
         local weaponName = v.name
         local weaponLabel = v.label
         local weaponHash = GetHashKey(v.name)
         local weaponAmmo, weaponAmmoLabel = nil, 'unknown'
         if v.ammotype then
             weaponAmmo = v.ammotype:lower()
-            weaponAmmoLabel = QBCore.Shared.Items[weaponAmmo].label
+            weaponAmmoLabel = sharedItems[weaponAmmo].label
         end
 
         print(weaponHash, weaponName, weaponLabel, weaponAmmo, weaponAmmoLabel)
