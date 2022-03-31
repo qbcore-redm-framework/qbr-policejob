@@ -20,7 +20,7 @@ local FingerPrintSessionId = nil
 -- end
 
 function CreatePrompts()
-    for k,v in pairs(Config.Locations['duty']) do 
+    for k,v in pairs(Config.Locations['duty']) do
         exports['qbr-prompts']:createPrompt('duty_prompt_' .. k, v, 0xF3830D8E, 'Toggle duty status', {
             type = 'client',
             event = 'qb-policejob:ToggleDuty',
@@ -28,7 +28,7 @@ function CreatePrompts()
         })
     end
 
-    for k,v in pairs(Config.Locations['evidence']) do 
+    for k,v in pairs(Config.Locations['evidence']) do
         exports['qbr-prompts']:createPrompt('evidence_prompt_' .. k, v, 0xF3830D8E, 'Open Evidence Stash', {
             type = 'client',
             event = 'police:client:EvidenceStashDrawer',
@@ -36,7 +36,7 @@ function CreatePrompts()
         })
     end
 
-    for k,v in pairs(Config.Locations['stash']) do 
+    for k,v in pairs(Config.Locations['stash']) do
         exports['qbr-prompts']:createPrompt('stash_prompt_' .. k, v, 0xF3830D8E, 'Open Personal Stash', {
             type = 'client',
             event = 'police:client:OpenPersonalStash',
@@ -44,7 +44,7 @@ function CreatePrompts()
         })
     end
 
-    for k,v in pairs(Config.Locations['armory']) do 
+    for k,v in pairs(Config.Locations['armory']) do
         exports['qbr-prompts']:createPrompt('armory_prompt_' .. k, v, 0xF3830D8E, 'Open Armory', {
             type = 'client',
             event = 'police:client:OpenArmory',
@@ -61,7 +61,7 @@ local function loadAnimDict(dict) -- interactions, job,
 end
 
 local function GetClosestPlayer() -- interactions, job, tracker
-    local closestPlayers = QBCore.Functions.GetPlayersFromCoords()
+    local closestPlayers = exports['qbr-core']:GetPlayersFromCoords()
     local closestDistance = -1
     local closestPlayer = -1
     local coords = GetEntityCoords(PlayerPedId())
@@ -84,7 +84,7 @@ end
 local function IsArmoryWhitelist() -- being removed
     local retval = false
 
-    if QBCore.Functions.GetPlayerData().job.name == 'police' then
+    if exports['qbr-core']:GetPlayerData().job.name == 'police' then
         retval = true
     end
     return retval
@@ -99,7 +99,7 @@ local function SetWeaponSeries()
 end
 
 RegisterNetEvent('police:client:ImpoundVehicle', function(fullImpound, price)
-    local vehicle = QBCore.Functions.GetClosestVehicle()
+    local vehicle = exports['qbr-core']:GetClosestVehicle()
     local bodyDamage = math.ceil(GetVehicleBodyHealth(vehicle))
     local engineDamage = math.ceil(GetVehicleEngineHealth(vehicle))
     local totalFuel = exports['LegacyFuel']:GetFuel(vehicle)
@@ -108,28 +108,28 @@ RegisterNetEvent('police:client:ImpoundVehicle', function(fullImpound, price)
         local pos = GetEntityCoords(ped)
         local vehpos = GetEntityCoords(vehicle)
         if #(pos - vehpos) < 5.0 and not IsPedInAnyVehicle(ped) then
-            local plate = QBCore.Functions.GetPlate(vehicle)
+            local plate = exports['qbr-core']:GetPlate(vehicle)
             TriggerServerEvent("police:server:Impound", plate, fullImpound, price, bodyDamage, engineDamage, totalFuel)
-            QBCore.Functions.DeleteVehicle(vehicle)
+            exports['qbr-core']:DeleteVehicle(vehicle)
         end
     end
 end)
 
 RegisterNetEvent('police:client:CheckStatus', function()
-    QBCore.Functions.GetPlayerData(function(PlayerData)
+    exports['qbr-core']:GetPlayerData(function(PlayerData)
         if PlayerData.job.name == "police" then
             local player, distance = GetClosestPlayer()
             if player ~= -1 and distance < 5.0 then
                 local playerId = GetPlayerServerId(player)
-                QBCore.Functions.TriggerCallback('police:GetPlayerStatus', function(result)
+                exports['qbr-core']:TriggerCallback('police:GetPlayerStatus', function(result)
                     if result then
                         for k, v in pairs(result) do
-                            QBCore.Functions.Notify(''..v..'')
+                            exports['qbr-core']:Notify(''..v..'')
                         end
                     end
                 end, playerId)
             else
-                QBCore.Functions.Notify(Lang:t("error.none_nearby"), "error")
+                exports['qbr-core']:Notify(Lang:t("error.none_nearby"), "error")
             end
         end
     end)
@@ -163,8 +163,8 @@ RegisterNetEvent('qb-policejob:ToggleDuty', function()
 end)
 
 RegisterNetEvent('police:client:OpenPersonalStash', function()
-    TriggerServerEvent("inventory:server:OpenInventory", "stash", "policestash_"..QBCore.Functions.GetPlayerData().citizenid)
-    TriggerEvent("inventory:client:SetCurrentStash", "policestash_"..QBCore.Functions.GetPlayerData().citizenid)
+    TriggerServerEvent("inventory:server:OpenInventory", "stash", "policestash_"..exports['qbr-core']:GetPlayerData().citizenid)
+    TriggerEvent("inventory:client:SetCurrentStash", "policestash_"..exports['qbr-core']:GetPlayerData().citizenid)
 end)
 
 RegisterNetEvent('police:client:OpenPersonalTrash', function()
@@ -199,7 +199,7 @@ end)
 
 -- Toggle Duty
 CreateThread(function()
-    if LocalPlayer.state.isLoggedIn and PlayerJob.name == 'police' then 
+    if LocalPlayer.state.isLoggedIn and PlayerJob.name == 'police' then
         CreatePrompts()
     end
 
@@ -213,21 +213,21 @@ CreateThread(function()
     end
 
     for k,v in pairs(QBCore.Shared.Weapons) do
-        local weaponName = v.name  
-        local weaponLabel = v.label 
+        local weaponName = v.name
+        local weaponLabel = v.label
         local weaponHash = GetHashKey(v.name)
         local weaponAmmo, weaponAmmoLabel = nil, 'unknown'
         if v.ammotype then
-            weaponAmmo = v.ammotype:lower() 
-            weaponAmmoLabel = QBCore.Shared.Items[weaponAmmo].label 
+            weaponAmmo = v.ammotype:lower()
+            weaponAmmoLabel = QBCore.Shared.Items[weaponAmmo].label
         end
 
         print(weaponHash, weaponName, weaponLabel, weaponAmmo, weaponAmmoLabel)
 
         Config.WeaponHashes[weaponHash] = {
             weaponName = weaponName,
-            weaponLabel = weaponLabel, 
-            weaponAmmo = weaponAmmo, 
+            weaponLabel = weaponLabel,
+            weaponAmmo = weaponAmmo,
             weaponAmmoLabel = weaponAmmoLabel
         }
     end

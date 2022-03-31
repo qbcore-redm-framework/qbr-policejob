@@ -1,5 +1,5 @@
 -- Variables
-QBCore = exports['qbr-core']:GetCoreObject()
+
 isHandcuffed = false
 cuffType = 1
 isEscorted = false
@@ -33,12 +33,12 @@ end
 function LocalInput(text, number, window)
     AddTextEntry('FMMC_MPM_NA', text)
     DisplayOnscreenKeyboard(1, "FMMC_MPM_NA", "", windows or "", "", "", "", number or 30)
-  
+
     while (UpdateOnscreenKeyboard() == 0) do
         DisableAllControlActions(0)
         Wait(0)
     end
-  
+
     if (GetOnscreenKeyboardResult()) then
         local result = GetOnscreenKeyboardResult()
         return result
@@ -47,7 +47,7 @@ end
 
 -- Events
 AddEventHandler('QBCore:Client:OnPlayerLoaded', function()
-    local player = QBCore.Functions.GetPlayerData()
+    local player = exports['qbr-core']:GetPlayerData()
     PlayerJob = player.job
     onDuty = player.job.onduty
     isHandcuffed = false
@@ -65,7 +65,7 @@ AddEventHandler('QBCore:Client:OnPlayerLoaded', function()
         DutyBlips = {}
     end
 
-    if PlayerJob and PlayerJob.name == 'police' then 
+    if PlayerJob and PlayerJob.name == 'police' then
         CreatePrompts()
     end
 end)
@@ -111,10 +111,10 @@ end)
 RegisterNetEvent('police:client:sendBillingMail', function(amount)
     SetTimeout(math.random(2500, 4000), function()
         local gender = Lang:t('info.mr')
-        if QBCore.Functions.GetPlayerData().charinfo.gender == 1 then
+        if exports['qbr-core']:GetPlayerData().charinfo.gender == 1 then
             gender = Lang:t('info.mrs')
         end
-        local charinfo = QBCore.Functions.GetPlayerData().charinfo
+        local charinfo = exports['qbr-core']:GetPlayerData().charinfo
         TriggerServerEvent('qb-phone:server:sendNewMail', {
             sender = Lang:t('email.sender'),
             subject = Lang:t('email.subject'),
@@ -144,7 +144,7 @@ RegisterNetEvent('police:client:UpdateBlips', function(players)
 end)
 
 RegisterNetEvent('police:client:policeAlert', function(coords, text)
-    QBCore.Functions.Notify({text = text, caption = street1name.. ' ' ..street2name}, 'police')
+    exports['qbr-core']:Notify({text = text, caption = street1name.. ' ' ..street2name}, 'police')
     local transG = 250
 
     local blip = Citizen.InvokeNative(0x554D9D53F696D002, 1664425300, coords.x, coords.y, coords.z)
@@ -177,7 +177,7 @@ RegisterNetEvent('police:client:SendToJail', function(time)
 end)
 
 RegisterNetEvent('police:client:SendPoliceEmergencyAlert', function()
-    local Player = QBCore.Functions.GetPlayerData()
+    local Player = exports['qbr-core']:GetPlayerData()
     TriggerServerEvent('police:server:policeAlert', Lang:t('info.officer_down', {lastname = Player.charinfo.lastname, callsign = Player.metadata.callsign}))
     TriggerServerEvent('hospital:server:ambulanceAlert', Lang:t('info.officer_down', {lastname = Player.charinfo.lastname, callsign = Player.metadata.callsign}))
 end)

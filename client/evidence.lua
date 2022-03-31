@@ -82,7 +82,7 @@ RegisterNetEvent('evidence:client:SetStatus', function(statusId, time)
                 text = StatusList[statusId],
                 time = time
             }
-            QBCore.Functions.Notify(CurrentStatusList[statusId].text, 'error')
+            exports['qbr-core']:Notify(CurrentStatusList[statusId].text, 'error')
         end
     elseif StatusList[statusId] then
         CurrentStatusList[statusId] = nil
@@ -126,7 +126,7 @@ end)
 RegisterNetEvent('evidence:client:ClearBlooddropsInArea', function()
     local pos = GetEntityCoords(PlayerPedId())
     local blooddropList = {}
-    QBCore.Functions.Progressbar('clear_blooddrops', Lang:t("progressbar.blood_clear"), 5000, false, true, {
+    exports['qbr-core']:Progressbar('clear_blooddrops', Lang:t("progressbar.blood_clear"), 5000, false, true, {
         disableMovement = false,
         disableCarMovement = false,
         disableMouse = false,
@@ -141,10 +141,10 @@ RegisterNetEvent('evidence:client:ClearBlooddropsInArea', function()
                 end
             end
             TriggerServerEvent('evidence:server:ClearBlooddrops', blooddropList)
-            QBCore.Functions.Notify(Lang:t("success.blood_clear"), "success")
+            exports['qbr-core']:Notify(Lang:t("success.blood_clear"), "success")
         end
     end, function() -- Cancel
-        QBCore.Functions.Notify(Lang:t("error.blood_not_cleared"), "error")
+        exports['qbr-core']:Notify(Lang:t("error.blood_not_cleared"), "error")
     end)
 end)
 
@@ -168,7 +168,7 @@ end)
 RegisterNetEvent('evidence:client:ClearCasingsInArea', function()
     local pos = GetEntityCoords(PlayerPedId())
     local casingList = {}
-    QBCore.Functions.Progressbar('clear_casings', Lang:t("progressbar.bullet_casing"), 5000, false, true, {
+    exports['qbr-core']:Progressbar('clear_casings', Lang:t("progressbar.bullet_casing"), 5000, false, true, {
         disableMovement = false,
         disableCarMovement = false,
         disableMouse = false,
@@ -182,11 +182,11 @@ RegisterNetEvent('evidence:client:ClearCasingsInArea', function()
                 end
             end
             TriggerServerEvent('evidence:server:ClearCasings', casingList)
-            QBCore.Functions.Notify(Lang:t("success.bullet_casing_removed"), "success")
-            
+            exports['qbr-core']:Notify(Lang:t("success.bullet_casing_removed"), "success")
+
         end
     end, function() -- Cancel
-        QBCore.Functions.Notify(Lang:t("error.bullet_casing_not_removed"), "error")
+        exports['qbr-core']:Notify(Lang:t("error.bullet_casing_not_removed"), "error")
     end)
 end)
 
