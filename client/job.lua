@@ -21,7 +21,7 @@ local FingerPrintSessionId = nil
 
 function CreatePrompts()
     for k,v in pairs(Config.Locations['duty']) do
-        exports['qbr-prompts']:createPrompt('duty_prompt_' .. k, v, 0xF3830D8E, 'Toggle duty status', {
+        exports['qbr-core']:createPrompt('duty_prompt_' .. k, v, 0xF3830D8E, 'Toggle duty status', {
             type = 'client',
             event = 'qb-policejob:ToggleDuty',
             args = {},
@@ -29,7 +29,7 @@ function CreatePrompts()
     end
 
     for k,v in pairs(Config.Locations['evidence']) do
-        exports['qbr-prompts']:createPrompt('evidence_prompt_' .. k, v, 0xF3830D8E, 'Open Evidence Stash', {
+        exports['qbr-core']:createPrompt('evidence_prompt_' .. k, v, 0xF3830D8E, 'Open Evidence Stash', {
             type = 'client',
             event = 'police:client:EvidenceStashDrawer',
             args = { k },
@@ -37,7 +37,7 @@ function CreatePrompts()
     end
 
     for k,v in pairs(Config.Locations['stash']) do
-        exports['qbr-prompts']:createPrompt('stash_prompt_' .. k, v, 0xF3830D8E, 'Open Personal Stash', {
+        exports['qbr-core']:createPrompt('stash_prompt_' .. k, v, 0xF3830D8E, 'Open Personal Stash', {
             type = 'client',
             event = 'police:client:OpenPersonalStash',
             args = {},
@@ -45,7 +45,7 @@ function CreatePrompts()
     end
 
     for k,v in pairs(Config.Locations['armory']) do
-        exports['qbr-prompts']:createPrompt('armory_prompt_' .. k, v, 0xF3830D8E, 'Open Armory', {
+        exports['qbr-core']:createPrompt('armory_prompt_' .. k, v, 0xF3830D8E, 'Open Armory', {
             type = 'client',
             event = 'police:client:OpenArmory',
             args = {},
