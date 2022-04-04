@@ -82,7 +82,7 @@ RegisterNetEvent('evidence:client:SetStatus', function(statusId, time)
                 text = StatusList[statusId],
                 time = time
             }
-            exports['qbr-core']:Notify(CurrentStatusList[statusId].text, 'error')
+            exports['qbr-core']:Notify(9, CurrentStatusList[statusId].text, 2000, 0, 'mp_lobby_textures', 'cross')
         end
     elseif StatusList[statusId] then
         CurrentStatusList[statusId] = nil
@@ -141,10 +141,10 @@ RegisterNetEvent('evidence:client:ClearBlooddropsInArea', function()
                 end
             end
             TriggerServerEvent('evidence:server:ClearBlooddrops', blooddropList)
-            exports['qbr-core']:Notify(Lang:t("success.blood_clear"), "success")
+            exports['qbr-core']:Notify(9, Lang:t("success.blood_clear"), 2000, 0, 'hud_textures', 'check')
         end
     end, function() -- Cancel
-        exports['qbr-core']:Notify(Lang:t("error.blood_not_cleared"), "error")
+        exports['qbr-core']:Notify(9, Lang:t("error.blood_not_cleared"), 2000, 0, 'mp_lobby_textures', 'cross')
     end)
 end)
 
@@ -182,11 +182,11 @@ RegisterNetEvent('evidence:client:ClearCasingsInArea', function()
                 end
             end
             TriggerServerEvent('evidence:server:ClearCasings', casingList)
-            exports['qbr-core']:Notify(Lang:t("success.bullet_casing_removed"), "success")
+            exports['qbr-core']:Notify(9, Lang:t("success.bullet_casing_removed"), 2000, 0, 'hud_textures', 'check')
 
         end
     end, function() -- Cancel
-        exports['qbr-core']:Notify(Lang:t("error.bullet_casing_not_removed"), "error")
+        exports['qbr-core']:Notify(9, Lang:t("error.bullet_casing_not_removed"), 2000, 0, 'mp_lobby_textures', 'cross')
     end)
 end)
 

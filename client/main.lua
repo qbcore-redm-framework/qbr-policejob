@@ -144,7 +144,7 @@ RegisterNetEvent('police:client:UpdateBlips', function(players)
 end)
 
 RegisterNetEvent('police:client:policeAlert', function(coords, text)
-    exports['qbr-core']:Notify({text = text, caption = street1name.. ' ' ..street2name}, 'police')
+    exports['qbr-core']:Notify(9, {text = text, caption = street1name.. ' ' ..street2name}, 'police')
     local transG = 250
 
     local blip = Citizen.InvokeNative(0x554D9D53F696D002, 1664425300, coords.x, coords.y, coords.z)

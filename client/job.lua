@@ -124,12 +124,12 @@ RegisterNetEvent('police:client:CheckStatus', function()
                 exports['qbr-core']:TriggerCallback('police:GetPlayerStatus', function(result)
                     if result then
                         for k, v in pairs(result) do
-                            exports['qbr-core']:Notify(''..v..'')
+                            exports['qbr-core']:Notify(9, ''..v..'')
                         end
                     end
                 end, playerId)
             else
-                exports['qbr-core']:Notify(Lang:t("error.none_nearby"), "error")
+                exports['qbr-core']:Notify(9, Lang:t("error.none_nearby"), 2000, 0, 'mp_lobby_textures', 'cross')
             end
         end
     end)
