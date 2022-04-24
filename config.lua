@@ -45,7 +45,7 @@ Config.Locations = {
     ["stations"] = {
         [1] = {label = "Sheriff", coords = vector3(1360.88, -1301.53, 77.77)},
         [2] = {label = "Saint Denis Police Dept. HQ", coords = vector3(2501.83, -1309.04, 48.95)},
-        [3] = {label = "Blackwater Police Dept.", coords = vector3(-760.47, -1269.14, 44.04)}
+        [3] = {label = "Blackwater Police Dept.", coords = vector3(-760.47, -1269.14, 44.04)},
         [4] = {label = "Strawberry Sheriff", coords = vector3(-1810.57, -350.91, 164.66)}
     },
 }
