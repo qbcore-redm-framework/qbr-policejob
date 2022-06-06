@@ -126,7 +126,7 @@ exports['qbr-core']:AddCommand("pobject", Lang:t("commands.place_object"), {{nam
             TriggerClientEvent("police:client:deleteObject", src)
         end
     else
-        TriggerClientEvent('QBCore:Notify', src, 9, Lang:t("error.on_duty_police_only"), 2000, 0, 'mp_lobby_textures', 'cross')
+        TriggerClientEvent('QBCore:Notify', src, 9, Lang:t("error.on_duty_police_only"), 5000, 0, 'mp_lobby_textures', 'cross', 'COLOR_WHITE')
     end
 end)
 
@@ -136,7 +136,7 @@ exports['qbr-core']:AddCommand("cuff", Lang:t("commands.cuff_player"), {}, false
     if Player.PlayerData.job.name == "police" and Player.PlayerData.job.onduty then
         TriggerClientEvent("police:client:CuffPlayer", src)
     else
-        TriggerClientEvent('QBCore:Notify', src, 9, Lang:t("error.on_duty_police_only"), 2000, 0, 'mp_lobby_textures', 'cross')
+        TriggerClientEvent('QBCore:Notify', src, 9, Lang:t("error.on_duty_police_only"), 5000, 0, 'mp_lobby_textures', 'cross', 'COLOR_WHITE')
     end
 end)
 
@@ -157,7 +157,7 @@ exports['qbr-core']:AddCommand("clearcasings", Lang:t("commands.clear_casign"), 
     if Player.PlayerData.job.name == "police" and Player.PlayerData.job.onduty then
         TriggerClientEvent("evidence:client:ClearCasingsInArea", src)
     else
-        TriggerClientEvent('QBCore:Notify', src, 9, Lang:t("error.on_duty_police_only"), 2000, 0, 'mp_lobby_textures', 'cross')
+        TriggerClientEvent('QBCore:Notify', src, 9, Lang:t("error.on_duty_police_only"), 5000, 0, 'mp_lobby_textures', 'cross', 'COLOR_WHITE')
     end
 end)
 
@@ -170,10 +170,10 @@ exports['qbr-core']:AddCommand("jail", Lang:t("commands.jail_player"), {{name = 
         if time > 0 then
             TriggerClientEvent("police:client:JailCommand", src, playerId, time)
         else
-            TriggerClientEvent('QBCore:Notify', src, 9, Lang:t('info.jail_time_no'), 2000, 0, 'mp_lobby_textures', 'cross')
+            TriggerClientEvent('QBCore:Notify', src, 9, Lang:t('info.jail_time_no'), 5000, 0, 'mp_lobby_textures', 'cross', 'COLOR_WHITE')
         end
     else
-        TriggerClientEvent('QBCore:Notify', src, 9, Lang:t("error.on_duty_police_only"), 2000, 0, 'mp_lobby_textures', 'cross')
+        TriggerClientEvent('QBCore:Notify', src, 9, Lang:t("error.on_duty_police_only"), 5000, 0, 'mp_lobby_textures', 'cross', 'COLOR_WHITE')
     end
 end)
 
@@ -184,7 +184,7 @@ exports['qbr-core']:AddCommand("unjail", Lang:t("commands.unjail_player"), {{nam
         local playerId = tonumber(args[1])
         TriggerClientEvent("prison:client:UnjailPerson", playerId)
     else
-        TriggerClientEvent('QBCore:Notify', src, 9, Lang:t("error.on_duty_police_only"), 2000, 0, 'mp_lobby_textures', 'cross')
+        TriggerClientEvent('QBCore:Notify', src, 9, Lang:t("error.on_duty_police_only"), 5000, 0, 'mp_lobby_textures', 'cross', 'COLOR_WHITE')
     end
 end)
 
@@ -194,7 +194,7 @@ exports['qbr-core']:AddCommand("clearblood", Lang:t("commands.clearblood"), {}, 
     if Player.PlayerData.job.name == "police" and Player.PlayerData.job.onduty then
         TriggerClientEvent("evidence:client:ClearBlooddropsInArea", src)
     else
-        TriggerClientEvent('QBCore:Notify', src, 9, Lang:t("error.on_duty_police_only"), 2000, 0, 'mp_lobby_textures', 'cross')
+        TriggerClientEvent('QBCore:Notify', src, 9, Lang:t("error.on_duty_police_only"), 5000, 0, 'mp_lobby_textures', 'cross', 'COLOR_WHITE')
     end
 end)
 
@@ -204,7 +204,7 @@ exports['qbr-core']:AddCommand("seizecash", Lang:t("commands.seizecash"), {}, fa
     if Player.PlayerData.job.name == "police" and Player.PlayerData.job.onduty then
         TriggerClientEvent("police:client:SeizeCash", src)
     else
-        TriggerClientEvent('QBCore:Notify', src, 9, Lang:t("error.on_duty_police_only"), 2000, 0, 'mp_lobby_textures', 'cross')
+        TriggerClientEvent('QBCore:Notify', src, 9, Lang:t("error.on_duty_police_only"), 5000, 0, 'mp_lobby_textures', 'cross', 'COLOR_WHITE')
     end
 end)
 
@@ -214,7 +214,7 @@ exports['qbr-core']:AddCommand("sc", Lang:t("commands.softcuff"), {}, false, fun
     if Player.PlayerData.job.name == "police" and Player.PlayerData.job.onduty then
         TriggerClientEvent("police:client:CuffPlayerSoft", src)
     else
-        TriggerClientEvent('QBCore:Notify', src, 9, Lang:t("error.on_duty_police_only"), 2000, 0, 'mp_lobby_textures', 'cross')
+        TriggerClientEvent('QBCore:Notify', src, 9, Lang:t("error.on_duty_police_only"), 5000, 0, 'mp_lobby_textures', 'cross', 'COLOR_WHITE')
     end
 end)
 
@@ -233,7 +233,7 @@ exports['qbr-core']:AddCommand("takedna", Lang:t("commands.takedna"), {{name = "
                 TriggerClientEvent("inventory:client:ItemBox", src, sharedItems["evidence_satchel"], "add")
             end
         else
-            TriggerClientEvent('QBCore:Notify', src, 9, Lang:t("error.have_evidence_bag"), 2000, 0, 'mp_lobby_textures', 'cross')
+            TriggerClientEvent('QBCore:Notify', src, 9, Lang:t("error.have_evidence_bag"), 5000, 0, 'mp_lobby_textures', 'cross', 'COLOR_WHITE')
         end
     end
 end)
@@ -379,7 +379,7 @@ RegisterNetEvent('police:server:EscortPlayer', function(playerId)
         if (Player.PlayerData.job.name == "police" or Player.PlayerData.job.name == "ambulance") or (EscortPlayer.PlayerData.metadata["ishandcuffed"] or EscortPlayer.PlayerData.metadata["isdead"] or EscortPlayer.PlayerData.metadata["inlaststand"]) then
             TriggerClientEvent("police:client:GetEscorted", EscortPlayer.PlayerData.source, Player.PlayerData.source)
         else
-            TriggerClientEvent('QBCore:Notify', src, 9, Lang:t("error.not_cuffed_dead"), 2000, 0, 'mp_lobby_textures', 'cross')
+            TriggerClientEvent('QBCore:Notify', src, 9, Lang:t("error.not_cuffed_dead"), 5000, 0, 'mp_lobby_textures', 'cross', 'COLOR_WHITE')
         end
     end
 end)
@@ -394,7 +394,7 @@ RegisterNetEvent('police:server:KidnapPlayer', function(playerId)
             TriggerClientEvent("police:client:GetKidnappedTarget", EscortPlayer.PlayerData.source, Player.PlayerData.source)
             TriggerClientEvent("police:client:GetKidnappedDragger", Player.PlayerData.source, EscortPlayer.PlayerData.source)
         else
-            TriggerClientEvent('QBCore:Notify', src, 9, Lang:t("error.not_cuffed_dead"), 2000, 0, 'mp_lobby_textures', 'cross')
+            TriggerClientEvent('QBCore:Notify', src, 9, Lang:t("error.not_cuffed_dead"), 5000, 0, 'mp_lobby_textures', 'cross', 'COLOR_WHITE')
         end
     end
 end)
@@ -407,7 +407,7 @@ RegisterNetEvent('police:server:SetPlayerOutVehicle', function(playerId)
         if EscortPlayer.PlayerData.metadata["ishandcuffed"] or EscortPlayer.PlayerData.metadata["isdead"] then
             TriggerClientEvent("police:client:SetOutVehicle", EscortPlayer.PlayerData.source)
         else
-            TriggerClientEvent('QBCore:Notify', src, 9, Lang:t("error.not_cuffed_dead"), 2000, 0, 'mp_lobby_textures', 'cross')
+            TriggerClientEvent('QBCore:Notify', src, 9, Lang:t("error.not_cuffed_dead"), 5000, 0, 'mp_lobby_textures', 'cross', 'COLOR_WHITE')
         end
     end
 end)
@@ -419,7 +419,7 @@ RegisterNetEvent('police:server:PutPlayerInVehicle', function(playerId)
         if EscortPlayer.PlayerData.metadata["ishandcuffed"] or EscortPlayer.PlayerData.metadata["isdead"] then
             TriggerClientEvent("police:client:PutInVehicle", EscortPlayer.PlayerData.source)
         else
-            TriggerClientEvent('QBCore:Notify', src, 9, Lang:t("error.not_cuffed_dead"), 2000, 0, 'mp_lobby_textures', 'cross')
+            TriggerClientEvent('QBCore:Notify', src, 9, Lang:t("error.not_cuffed_dead"), 5000, 0, 'mp_lobby_textures', 'cross', 'COLOR_WHITE')
         end
     end
 end)
@@ -432,7 +432,7 @@ RegisterNetEvent('police:server:BillPlayer', function(playerId, price)
         if OtherPlayer then
             OtherPlayer.Functions.RemoveMoney("bank", price, "paid-bills")
             TriggerEvent('qb-bossmenu:server:addAccountMoney', "police", price)
-            TriggerClientEvent('QBCore:Notify', OtherPlayer.PlayerData.source, Lang:t("info.fine_received", {fine = price}), 2000, 0, 'blips', 'blip_radius_search')
+            TriggerClientEvent('QBCore:Notify', OtherPlayer.PlayerData.source, Lang:t("info.fine_received", {fine = price}), 5000, 0, 'blips', 'blip_radius_search', 'COLOR_WHITE')
         end
     end
 end)
@@ -454,7 +454,7 @@ RegisterNetEvent('police:server:JailPlayer', function(playerId, time)
                 ["date"] = currentDate
             })
             TriggerClientEvent("police:client:SendToJail", OtherPlayer.PlayerData.source, time)
-            TriggerClientEvent('QBCore:Notify', src, 9, Lang:t("info.sent_jail_for", {time = time}), 2000, 0, 'blips', 'blip_radius_search')
+            TriggerClientEvent('QBCore:Notify', src, 9, Lang:t("info.sent_jail_for", {time = time}), 5000, 0, 'blips', 'blip_radius_search', 'COLOR_WHITE')
         end
     end
 end)
@@ -471,8 +471,8 @@ RegisterNetEvent('police:server:SearchPlayer', function(playerId)
     local src = source
     local SearchedPlayer = exports['qbr-core']:GetPlayer(playerId)
     if SearchedPlayer then
-        TriggerClientEvent('QBCore:Notify', src, 9, Lang:t("info.cash_found", {cash = SearchedPlayer.PlayerData.money["cash"]}), 2000, 0, 'blips', 'blip_radius_search')
-        TriggerClientEvent('QBCore:Notify', SearchedPlayer.PlayerData.source, Lang:t("info.being_searched"), 2000, 0, 'blips', 'blip_radius_search')
+        TriggerClientEvent('QBCore:Notify', src, 9, Lang:t("info.cash_found", {cash = SearchedPlayer.PlayerData.money["cash"]}), 5000, 0, 'blips', 'blip_radius_search', 'COLOR_WHITE')
+        TriggerClientEvent('QBCore:Notify', SearchedPlayer.PlayerData.source, Lang:t("info.being_searched"), 5000, 0, 'blips', 'blip_radius_search', 'COLOR_WHITE')
     end
 end)
 
@@ -486,7 +486,7 @@ RegisterNetEvent('police:server:SeizeCash', function(playerId)
         SearchedPlayer.Functions.RemoveMoney("cash", moneyAmount, "police-cash-seized")
         Player.Functions.AddItem("moneybag", 1, false, info)
         TriggerClientEvent('inventory:client:ItemBox', src, sharedItems["moneybag"], "add")
-        TriggerClientEvent('QBCore:Notify', SearchedPlayer.PlayerData.source, Lang:t("info.cash_confiscated"), 2000, 0, 'blips', 'blip_radius_search')
+        TriggerClientEvent('QBCore:Notify', SearchedPlayer.PlayerData.source, Lang:t("info.cash_confiscated"), 5000, 0, 'blips', 'blip_radius_search', 'COLOR_WHITE')
     end
 end)
 
@@ -498,8 +498,8 @@ RegisterNetEvent('police:server:RobPlayer', function(playerId)
         local money = SearchedPlayer.PlayerData.money["cash"]
         Player.Functions.AddMoney("cash", money, "police-player-robbed")
         SearchedPlayer.Functions.RemoveMoney("cash", money, "police-player-robbed")
-        TriggerClientEvent('QBCore:Notify', SearchedPlayer.PlayerData.source, Lang:t("info.cash_robbed", {money = money}), 2000, 0, 'blips', 'blip_radius_search')
-        TriggerClientEvent('QBCore:Notify', Player.PlayerData.source, Lang:t("info.stolen_money", {stolen = money}), 2000, 0, 'blips', 'blip_radius_search')
+        TriggerClientEvent('QBCore:Notify', SearchedPlayer.PlayerData.source, Lang:t("info.cash_robbed", {money = money}), 5000, 0, 'blips', 'blip_radius_search', 'COLOR_WHITE')
+        TriggerClientEvent('QBCore:Notify', Player.PlayerData.source, Lang:t("info.stolen_money", {stolen = money}), 5000, 0, 'blips', 'blip_radius_search', 'COLOR_WHITE')
     end
 end)
 
@@ -559,7 +559,7 @@ RegisterNetEvent('evidence:server:AddBlooddropToInventory', function(bloodId, bl
             BloodDrops[bloodId] = nil
         end
     else
-        TriggerClientEvent('QBCore:Notify', src, 9, Lang:t("error.have_evidence_bag"), 2000, 0, 'mp_lobby_textures', 'cross')
+        TriggerClientEvent('QBCore:Notify', src, 9, Lang:t("error.have_evidence_bag"), 5000, 0, 'mp_lobby_textures', 'cross', 'COLOR_WHITE')
     end
 end)
 
@@ -573,7 +573,7 @@ RegisterNetEvent('evidence:server:AddFingerprintToInventory', function(fingerId,
             FingerDrops[fingerId] = nil
         end
     else
-        TriggerClientEvent('QBCore:Notify', src, 9, Lang:t("error.have_evidence_bag"), 2000, 0, 'mp_lobby_textures', 'cross')
+        TriggerClientEvent('QBCore:Notify', src, 9, Lang:t("error.have_evidence_bag"), 5000, 0, 'mp_lobby_textures', 'cross', 'COLOR_WHITE')
     end
 end)
 
@@ -625,7 +625,7 @@ RegisterNetEvent('evidence:server:AddCasingToInventory', function(casingId, casi
             Casings[casingId] = nil
         end
     else
-        TriggerClientEvent('QBCore:Notify', src, 9, Lang:t("error.have_evidence_bag"), 2000, 0, 'mp_lobby_textures', 'cross')
+        TriggerClientEvent('QBCore:Notify', src, 9, Lang:t("error.have_evidence_bag"), 5000, 0, 'mp_lobby_textures', 'cross', 'COLOR_WHITE')
     end
 end)
 

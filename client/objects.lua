@@ -73,7 +73,7 @@ RegisterNetEvent('police:client:spawnCone', function()
         TriggerServerEvent("police:server:spawnObject", "cone")
     end, function() -- Cancel
         StopAnimTask(PlayerPedId(), "anim@narcotics@trash", "drop_front", 1.0)
-        exports['qbr-core']:Notify(9, Lang:t("error.canceled"), 2000, 0, 'mp_lobby_textures', 'cross')
+        exports['qbr-core']:Notify(9, Lang:t("error.canceled"), 5000, 0, 'mp_lobby_textures', 'cross', 'COLOR_WHITE')
     end)
 end)
 
@@ -92,7 +92,7 @@ RegisterNetEvent('police:client:spawnBarrier', function()
         TriggerServerEvent("police:server:spawnObject", "barrier")
     end, function() -- Cancel
         StopAnimTask(PlayerPedId(), "anim@narcotics@trash", "drop_front", 1.0)
-        exports['qbr-core']:Notify(9, Lang:t("error.canceled"), 2000, 0, 'mp_lobby_textures', 'cross')
+        exports['qbr-core']:Notify(9, Lang:t("error.canceled"), 5000, 0, 'mp_lobby_textures', 'cross', 'COLOR_WHITE')
     end)
 end)
 
@@ -111,7 +111,7 @@ RegisterNetEvent('police:client:spawnRoadSign', function()
         TriggerServerEvent("police:server:spawnObject", "roadsign")
     end, function() -- Cancel
         StopAnimTask(PlayerPedId(), "anim@narcotics@trash", "drop_front", 1.0)
-        exports['qbr-core']:Notify(9, Lang:t("error.canceled"), 2000, 0, 'mp_lobby_textures', 'cross')
+        exports['qbr-core']:Notify(9, Lang:t("error.canceled"), 5000, 0, 'mp_lobby_textures', 'cross', 'COLOR_WHITE')
     end)
 end)
 
@@ -130,7 +130,7 @@ RegisterNetEvent('police:client:spawnTent', function()
         TriggerServerEvent("police:server:spawnObject", "tent")
     end, function() -- Cancel
         StopAnimTask(PlayerPedId(), "anim@narcotics@trash", "drop_front", 1.0)
-        exports['qbr-core']:Notify(9, Lang:t("error.canceled"), 2000, 0, 'mp_lobby_textures', 'cross')
+        exports['qbr-core']:Notify(9, Lang:t("error.canceled"), 5000, 0, 'mp_lobby_textures', 'cross', 'COLOR_WHITE')
     end)
 end)
 
@@ -149,7 +149,7 @@ RegisterNetEvent('police:client:spawnLight', function()
         TriggerServerEvent("police:server:spawnObject", "light")
     end, function() -- Cancel
         StopAnimTask(PlayerPedId(), "anim@narcotics@trash", "drop_front", 1.0)
-        exports['qbr-core']:Notify(9, Lang:t("error.canceled"), 2000, 0, 'mp_lobby_textures', 'cross')
+        exports['qbr-core']:Notify(9, Lang:t("error.canceled"), 5000, 0, 'mp_lobby_textures', 'cross', 'COLOR_WHITE')
     end)
 end)
 
@@ -170,7 +170,7 @@ RegisterNetEvent('police:client:deleteObject', function()
             TriggerServerEvent("police:server:deleteObject", objectId)
         end, function() -- Cancel
             StopAnimTask(PlayerPedId(), "weapons@first_person@aim_rng@generic@projectile@thermal_charge@", "plant_floor", 1.0)
-            exports['qbr-core']:Notify(9, Lang:t("error.canceled"), 2000, 0, 'mp_lobby_textures', 'cross')
+            exports['qbr-core']:Notify(9, Lang:t("error.canceled"), 5000, 0, 'mp_lobby_textures', 'cross', 'COLOR_WHITE')
         end)
     end
 end)
@@ -215,7 +215,7 @@ RegisterNetEvent('police:client:SpawnSpikeStrip', function()
             TriggerServerEvent('police:server:SyncSpikes', SpawnedSpikes)
         end
     else
-        exports['qbr-core']:Notify(9, Lang:t("error.no_spikestripe"), 2000, 0, 'mp_lobby_textures', 'cross')
+        exports['qbr-core']:Notify(9, Lang:t("error.no_spikestripe"), 5000, 0, 'mp_lobby_textures', 'cross', 'COLOR_WHITE')
     end
 end)
 

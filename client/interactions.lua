@@ -59,7 +59,7 @@ RegisterNetEvent('police:client:SearchPlayer', function()
         TriggerServerEvent("inventory:server:OpenInventory", "otherplayer", playerId)
         TriggerServerEvent("police:server:SearchPlayer", playerId)
     else
-        exports['qbr-core']:Notify(9, Lang:t("error.none_nearby"), 2000, 0, 'mp_lobby_textures', 'cross')
+        exports['qbr-core']:Notify(9, Lang:t("error.none_nearby"), 5000, 0, 'mp_lobby_textures', 'cross', 'COLOR_WHITE')
     end
 end)
 
@@ -69,7 +69,7 @@ RegisterNetEvent('police:client:SeizeCash', function()
         local playerId = GetPlayerServerId(player)
         TriggerServerEvent("police:server:SeizeCash", playerId)
     else
-        exports['qbr-core']:Notify(9, Lang:t("error.none_nearby"), 2000, 0, 'mp_lobby_textures', 'cross')
+        exports['qbr-core']:Notify(9, Lang:t("error.none_nearby"), 5000, 0, 'mp_lobby_textures', 'cross', 'COLOR_WHITE')
     end
 end)
 
@@ -79,7 +79,7 @@ RegisterNetEvent('police:client:SeizeDriverLicense', function()
         local playerId = GetPlayerServerId(player)
         TriggerServerEvent("police:server:SeizeDriverLicense", playerId)
     else
-        exports['qbr-core']:Notify(9, Lang:t("error.none_nearby"), 2000, 0, 'mp_lobby_textures', 'cross')
+        exports['qbr-core']:Notify(9, Lang:t("error.none_nearby"), 5000, 0, 'mp_lobby_textures', 'cross', 'COLOR_WHITE')
     end
 end)
 
@@ -104,14 +104,14 @@ RegisterNetEvent('police:client:RobPlayer', function()
                     TriggerServerEvent("inventory:server:OpenInventory", "otherplayer", playerId)
                     TriggerEvent("inventory:server:RobPlayer", playerId)
                 else
-                    exports['qbr-core']:Notify(9, Lang:t("error.none_nearby"), 2000, 0, 'mp_lobby_textures', 'cross')
+                    exports['qbr-core']:Notify(9, Lang:t("error.none_nearby"), 5000, 0, 'mp_lobby_textures', 'cross', 'COLOR_WHITE')
                 end
             end, function() -- Cancel
-                exports['qbr-core']:Notify(9, Lang:t("error.canceled"), 2000, 0, 'mp_lobby_textures', 'cross')
+                exports['qbr-core']:Notify(9, Lang:t("error.canceled"), 5000, 0, 'mp_lobby_textures', 'cross', 'COLOR_WHITE')
             end)
         end
     else
-        exports['qbr-core']:Notify(9, Lang:t("error.none_nearby"), 2000, 0, 'mp_lobby_textures', 'cross')
+        exports['qbr-core']:Notify(9, Lang:t("error.none_nearby"), 5000, 0, 'mp_lobby_textures', 'cross', 'COLOR_WHITE')
     end
 end)
 
@@ -131,10 +131,10 @@ RegisterNetEvent('police:client:JailPlayer', function()
         if tonumber(dialogInput) > 0 then
             TriggerServerEvent("police:server:JailPlayer", playerId, tonumber(dialogInput))
         else
-            exports['qbr-core']:Notify(9, Lang:t("error.time_higher"), 2000, 0, 'mp_lobby_textures', 'cross')
+            exports['qbr-core']:Notify(9, Lang:t("error.time_higher"), 5000, 0, 'mp_lobby_textures', 'cross', 'COLOR_WHITE')
         end
     else
-        exports['qbr-core']:Notify(9, Lang:t("error.none_nearby"), 2000, 0, 'mp_lobby_textures', 'cross')
+        exports['qbr-core']:Notify(9, Lang:t("error.none_nearby"), 5000, 0, 'mp_lobby_textures', 'cross', 'COLOR_WHITE')
     end
 end)
 
@@ -146,10 +146,10 @@ RegisterNetEvent('police:client:BillPlayer', function()
         if tonumber(dialogInput) > 0 then
             TriggerServerEvent("police:server:BillPlayer", playerId, tonumber(dialogInput))
         else
-            exports['qbr-core']:Notify(9, Lang:t("error.amount_higher"), 2000, 0, 'mp_lobby_textures', 'cross')
+            exports['qbr-core']:Notify(9, Lang:t("error.amount_higher"), 5000, 0, 'mp_lobby_textures', 'cross', 'COLOR_WHITE')
         end
     else
-        exports['qbr-core']:Notify(9, Lang:t("error.none_nearby"), 2000, 0, 'mp_lobby_textures', 'cross')
+        exports['qbr-core']:Notify(9, Lang:t("error.none_nearby"), 5000, 0, 'mp_lobby_textures', 'cross', 'COLOR_WHITE')
     end
 end)
 
@@ -161,7 +161,7 @@ RegisterNetEvent('police:client:PutPlayerInVehicle', function()
             TriggerServerEvent("police:server:PutPlayerInVehicle", playerId)
         end
     else
-        exports['qbr-core']:Notify(9, Lang:t("error.none_nearby"), 2000, 0, 'mp_lobby_textures', 'cross')
+        exports['qbr-core']:Notify(9, Lang:t("error.none_nearby"), 5000, 0, 'mp_lobby_textures', 'cross', 'COLOR_WHITE')
     end
 end)
 
@@ -173,7 +173,7 @@ RegisterNetEvent('police:client:SetPlayerOutVehicle', function()
             TriggerServerEvent("police:server:SetPlayerOutVehicle", playerId)
         end
     else
-        exports['qbr-core']:Notify(9, Lang:t("error.none_nearby"), 2000, 0, 'mp_lobby_textures', 'cross')
+        exports['qbr-core']:Notify(9, Lang:t("error.none_nearby"), 5000, 0, 'mp_lobby_textures', 'cross', 'COLOR_WHITE')
     end
 end)
 
@@ -185,7 +185,7 @@ RegisterNetEvent('police:client:EscortPlayer', function()
             TriggerServerEvent("police:server:EscortPlayer", playerId)
         end
     else
-        exports['qbr-core']:Notify(9, Lang:t("error.none_nearby"), 2000, 0, 'mp_lobby_textures', 'cross')
+        exports['qbr-core']:Notify(9, Lang:t("error.none_nearby"), 5000, 0, 'mp_lobby_textures', 'cross', 'COLOR_WHITE')
     end
 end)
 
@@ -199,7 +199,7 @@ RegisterNetEvent('police:client:KidnapPlayer', function()
             end
         end
     else
-        exports['qbr-core']:Notify(9, Lang:t("error.none_nearby"), 2000, 0, 'mp_lobby_textures', 'cross')
+        exports['qbr-core']:Notify(9, Lang:t("error.none_nearby"), 5000, 0, 'mp_lobby_textures', 'cross', 'COLOR_WHITE')
     end
 end)
 
@@ -212,10 +212,10 @@ RegisterNetEvent('police:client:CuffPlayerSoft', function()
                 TriggerServerEvent("police:server:CuffPlayer", playerId, true)
                 -- HandCuffAnimation()
             else
-                exports['qbr-core']:Notify(9, Lang:t("error.vehicle_cuff"), 2000, 0, 'mp_lobby_textures', 'cross')
+                exports['qbr-core']:Notify(9, Lang:t("error.vehicle_cuff"), 5000, 0, 'mp_lobby_textures', 'cross', 'COLOR_WHITE')
             end
         else
-            exports['qbr-core']:Notify(9, Lang:t("error.none_nearby"), 2000, 0, 'mp_lobby_textures', 'cross')
+            exports['qbr-core']:Notify(9, Lang:t("error.none_nearby"), 5000, 0, 'mp_lobby_textures', 'cross', 'COLOR_WHITE')
         end
     else
         Wait(2000)
@@ -233,14 +233,14 @@ RegisterNetEvent('police:client:CuffPlayer', function()
                         TriggerServerEvent("police:server:CuffPlayer", playerId, false)
                         -- HandCuffAnimation()
                     else
-                        exports['qbr-core']:Notify(9, Lang:t("error.vehicle_cuff"), 2000, 0, 'mp_lobby_textures', 'cross')
+                        exports['qbr-core']:Notify(9, Lang:t("error.vehicle_cuff"), 5000, 0, 'mp_lobby_textures', 'cross', 'COLOR_WHITE')
                     end
                 else
-                    exports['qbr-core']:Notify(9, Lang:t("error.no_cuff"), 2000, 0, 'mp_lobby_textures', 'cross')
+                    exports['qbr-core']:Notify(9, Lang:t("error.no_cuff"), 5000, 0, 'mp_lobby_textures', 'cross', 'COLOR_WHITE')
                 end
             end, Config.HandCuffItem)
         else
-            exports['qbr-core']:Notify(9, Lang:t("error.none_nearby"), 2000, 0, 'mp_lobby_textures', 'cross')
+            exports['qbr-core']:Notify(9, Lang:t("error.none_nearby"), 5000, 0, 'mp_lobby_textures', 'cross', 'COLOR_WHITE')
         end
     else
         Wait(2000)
@@ -332,11 +332,11 @@ RegisterNetEvent('police:client:GetCuffed', function(playerId, isSoftcuff)
         if not isSoftcuff then
             cuffType = 16
             -- GetCuffedAnimation(playerId)
-            exports['qbr-core']:Notify(9, Lang:t("info.cuff"), 2000, 0, 'blips', 'blip_radius_search')
+            exports['qbr-core']:Notify(9, Lang:t("info.cuff"), 5000, 0, 'blips', 'blip_radius_search', 'COLOR_WHITE')
         else
             cuffType = 49
             -- GetCuffedAnimation(playerId)
-            exports['qbr-core']:Notify(9, Lang:t("info.cuffed_walk"), 2000, 0, 'blips', 'blip_radius_search')
+            exports['qbr-core']:Notify(9, Lang:t("info.cuffed_walk"), 5000, 0, 'blips', 'blip_radius_search', 'COLOR_WHITE')
         end
     else
         isHandcuffed = false
@@ -353,7 +353,7 @@ RegisterNetEvent('police:client:GetCuffed', function(playerId, isSoftcuff)
             FreezeEntityPosition(ped, false)
         end
         -- TriggerServerEvent("InteractSound_SV:PlayOnSource", "Uncuff", 0.2)
-        exports['qbr-core']:Notify(9, Lang:t("success.uncuffed"),2000, 0, 'hud_textures', 'check')
+        exports['qbr-core']:Notify(9, Lang:t("success.uncuffed"), 5000, 0, 'hud_textures', 'check', 'COLOR_WHITE')
     end
 end)
 
