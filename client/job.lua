@@ -129,7 +129,7 @@ RegisterNetEvent('police:client:CheckStatus', function()
                     end
                 end, playerId)
             else
-                exports['qbr-core']:Notify(9, Lang:t("error.none_nearby"), 2000, 0, 'mp_lobby_textures', 'cross')
+                exports['qbr-core']:Notify(9, Lang:t("error.none_nearby"), 5000, 0, 'mp_lobby_textures', 'cross', 'COLOR_WHITE')
             end
         end
     end)
