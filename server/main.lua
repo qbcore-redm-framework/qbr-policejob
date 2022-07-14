@@ -107,28 +107,28 @@ local function DnaHash(s)
 end
 
 -- Commands
-exports['qbr-core']:AddCommand("pobject", Lang:t("commands.place_object"), {{name = "type",help = Lang:t("info.poobject_object")}}, true, function(source, args)
-    local src = source
-    local Player = exports['qbr-core']:GetPlayer(src)
-    local type = args[1]:lower()
-    if Player.PlayerData.job.name == "police" and Player.PlayerData.job.onduty then
-        if type == "cone" then
-            TriggerClientEvent("police:client:spawnCone", src)
-        elseif type == "barrier" then
-            TriggerClientEvent("police:client:spawnBarrier", src)
-        elseif type == "roadsign" then
-            TriggerClientEvent("police:client:spawnRoadSign", src)
-        elseif type == "tent" then
-            TriggerClientEvent("police:client:spawnTent", src)
-        elseif type == "light" then
-            TriggerClientEvent("police:client:spawnLight", src)
-        elseif type == "delete" then
-            TriggerClientEvent("police:client:deleteObject", src)
-        end
-    else
-        TriggerClientEvent('QBCore:Notify', src, 9, Lang:t("error.on_duty_police_only"), 5000, 0, 'mp_lobby_textures', 'cross', 'COLOR_WHITE')
-    end
-end)
+-- exports['qbr-core']:AddCommand("pobject", Lang:t("commands.place_object"), {{name = "type",help = Lang:t("info.poobject_object")}}, true, function(source, args)
+--     local src = source
+--     local Player = exports['qbr-core']:GetPlayer(src)
+--     local type = args[1]:lower()
+--     if Player.PlayerData.job.name == "police" and Player.PlayerData.job.onduty then
+--         if type == "cone" then
+--             TriggerClientEvent("police:client:spawnCone", src)
+--         elseif type == "barrier" then
+--             TriggerClientEvent("police:client:spawnBarrier", src)
+--         elseif type == "roadsign" then
+--             TriggerClientEvent("police:client:spawnRoadSign", src)
+--         elseif type == "tent" then
+--             TriggerClientEvent("police:client:spawnTent", src)
+--         elseif type == "light" then
+--             TriggerClientEvent("police:client:spawnLight", src)
+--         elseif type == "delete" then
+--             TriggerClientEvent("police:client:deleteObject", src)
+--         end
+--     else
+--         TriggerClientEvent('QBCore:Notify', src, 9, Lang:t("error.on_duty_police_only"), 5000, 0, 'mp_lobby_textures', 'cross', 'COLOR_WHITE')
+--     end
+-- end)
 
 exports['qbr-core']:AddCommand("cuff", Lang:t("commands.cuff_player"), {}, false, function(source, args)
     local src = source

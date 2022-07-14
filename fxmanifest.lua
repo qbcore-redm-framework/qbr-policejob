@@ -13,14 +13,11 @@ shared_scripts {
 
 client_scripts {
 	'client/main.lua',
-	'client/camera.lua',
 	'client/interactions.lua',
 	'client/job.lua',
-	'client/heli.lua',
 	--'client/anpr.lua',
 	'client/evidence.lua',
 	'client/objects.lua',
-	'client/tracker.lua'
 }
 
 server_scripts {
