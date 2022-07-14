@@ -108,21 +108,21 @@ RegisterNetEvent('QBCore:Client:OnJobUpdate', function(JobInfo)
     TriggerServerEvent("police:server:UpdateBlips")
 end)
 
-RegisterNetEvent('police:client:sendBillingMail', function(amount)
-    SetTimeout(math.random(2500, 4000), function()
-        local gender = Lang:t('info.mr')
-        if exports['qbr-core']:GetPlayerData().charinfo.gender == 1 then
-            gender = Lang:t('info.mrs')
-        end
-        local charinfo = exports['qbr-core']:GetPlayerData().charinfo
-        TriggerServerEvent('qb-phone:server:sendNewMail', {
-            sender = Lang:t('email.sender'),
-            subject = Lang:t('email.subject'),
-            message = Lang:t('email.message', {value = gender, value2 = charinfo.lastname, value3 = amount}),
-            button = {}
-        })
-    end)
-end)
+-- RegisterNetEvent('police:client:sendBillingMail', function(amount)
+--     SetTimeout(math.random(2500, 4000), function()
+--         local gender = Lang:t('info.mr')
+--         if exports['qbr-core']:GetPlayerData().charinfo.gender == 1 then
+--             gender = Lang:t('info.mrs')
+--         end
+--         local charinfo = exports['qbr-core']:GetPlayerData().charinfo
+--         TriggerServerEvent('qb-phone:server:sendNewMail', {
+--             sender = Lang:t('email.sender'),
+--             subject = Lang:t('email.subject'),
+--             message = Lang:t('email.message', {value = gender, value2 = charinfo.lastname, value3 = amount}),
+--             button = {}
+--         })
+--     end)
+-- end)
 
 RegisterNetEvent('police:client:UpdateBlips', function(players)
     if Config.ShowBlips then
@@ -180,4 +180,19 @@ RegisterNetEvent('police:client:SendPoliceEmergencyAlert', function()
     local Player = exports['qbr-core']:GetPlayerData()
     TriggerServerEvent('police:server:policeAlert', Lang:t('info.officer_down', {lastname = Player.charinfo.lastname, callsign = Player.metadata.callsign}))
     TriggerServerEvent('hospital:server:ambulanceAlert', Lang:t('info.officer_down', {lastname = Player.charinfo.lastname, callsign = Player.metadata.callsign}))
+end)
+
+
+AddEventHandler('onResourceStart', function(resourceName)
+    if (GetCurrentResourceName() == resourceName) then
+        CreatePrompts()
+    end
+end)
+
+AddEventHandler('onResourceStop', function(resourceName)
+    if (GetCurrentResourceName() == resourceName) then
+        if promptsStatus then 
+            DeletePrompts()
+        end
+    end
 end)

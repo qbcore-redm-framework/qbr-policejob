@@ -2,7 +2,7 @@
 local currentGarage = 0
 local inFingerprint = false
 local FingerPrintSessionId = nil
-
+promptsStatus = false
 -- Functions
 -- local function DrawText3D(x, y, z, text)
 --     SetTextScale(0.35, 0.35)
@@ -19,17 +19,71 @@ local FingerPrintSessionId = nil
 --     ClearDrawOrigin()
 -- end
 
+function TakeOutVehicle(vehicleInfo)
+    local coords = Config.Locations["vehicle"][currentGarage]
+    exports['qbr-core']:SpawnVehicle(vehicleInfo, function(veh)
+        SetEntityHeading(veh, coords.w)
+        TaskWarpPedIntoVehicle(PlayerPedId(), veh, -1)
+	Citizen.InvokeNative(0x400F9556,veh, Lang:t('info.police_plate')..tostring(math.random(1000, 9999)))
+        -- if Config.VehicleSettings[vehicleInfo] ~= nil then
+        --     QBCore.Shared.SetDefaultVehicleExtras(veh, Config.VehicleSettings[vehicleInfo].extras)
+        -- end
+        --TriggerEvent("vehiclekeys:client:SetOwner", exports['qbr-core']:GetPlate(veh))
+        SetVehicleEngineOn(veh, true, true)
+    end, coords, true)
+end
+
+function MenuGarage()
+    local vehicleMenu = {
+        {
+            header = Lang:t('menu.garage_title'),
+            isMenuHeader = true
+        }
+    }
+
+    local authorizedVehicles = Config.AuthorizedVehicles[exports['qbr-core']:GetPlayerData().job.grade.level]
+    for veh, label in pairs(authorizedVehicles) do
+        vehicleMenu[#vehicleMenu+1] = {
+            header = label,
+            txt = "",
+            params = {
+                event = "police:client:TakeOutVehicle",
+                args = {
+                    vehicle = veh
+                }
+            }
+        }
+    end
+    vehicleMenu[#vehicleMenu+1] = {
+        header = Lang:t('menu.close'),
+        txt = "",
+        params = {
+            event = "qbr-menu:client:closeMenu"
+        }
+
+    }
+    exports['qbr-menu']:openMenu(vehicleMenu)
+end
+
 function CreatePrompts()
     for k,v in pairs(Config.Locations['duty']) do
-        exports['qbr-core']:createPrompt('duty_prompt_' .. k, v, 0xF3830D8E, 'Toggle duty status', {
+        exports['qbr-core']:createPrompt('duty_prompt_' .. k, v, Config.PromptKey, 'Toggle duty status', {
             type = 'client',
-            event = 'qb-policejob:ToggleDuty',
+            event = 'police:client:promptDuty',
             args = {},
         })
     end
 
+    for k, v in pairs(Config.Locations["vehicle"]) do
+        exports['qbr-core']:createPrompt("police:vehicle_"..k, vector3(v.x, v.y, v.z), Config.PromptKey, Lang:t('menu.pol_garage'), {
+            type = 'client',
+            event = 'police:client:promptVehicle',
+            args = {k},
+        })
+    end
+
     for k,v in pairs(Config.Locations['evidence']) do
-        exports['qbr-core']:createPrompt('evidence_prompt_' .. k, v, 0xF3830D8E, 'Open Evidence Stash', {
+        exports['qbr-core']:createPrompt('evidence_prompt_' .. k, v, Config.PromptKey, 'Open Evidence Stash', {
             type = 'client',
             event = 'police:client:EvidenceStashDrawer',
             args = { k },
@@ -37,7 +91,7 @@ function CreatePrompts()
     end
 
     for k,v in pairs(Config.Locations['stash']) do
-        exports['qbr-core']:createPrompt('stash_prompt_' .. k, v, 0xF3830D8E, 'Open Personal Stash', {
+        exports['qbr-core']:createPrompt('stash_prompt_' .. k, v, Config.PromptKey, 'Open Personal Stash', {
             type = 'client',
             event = 'police:client:OpenPersonalStash',
             args = {},
@@ -45,13 +99,60 @@ function CreatePrompts()
     end
 
     for k,v in pairs(Config.Locations['armory']) do
-        exports['qbr-core']:createPrompt('armory_prompt_' .. k, v, 0xF3830D8E, 'Open Armory', {
+        exports['qbr-core']:createPrompt('armory_prompt_' .. k, v, Config.PromptKey, Lang:t('menu.pol_armory'), {
             type = 'client',
             event = 'police:client:OpenArmory',
             args = {},
         })
     end
+    promptsStatus = true
 end
+
+function DeletePrompts()
+    for k,v in pairs(Config.Locations['duty']) do
+        exports['qbr-core']:deletePrompt('duty_prompt_' .. k, v, Config.PromptKey, 'Toggle duty status', {
+            type = 'client',
+            event = 'police:client:promptDuty',
+            args = {},
+        })
+    end
+
+    for k, v in pairs(Config.Locations["vehicle"]) do
+        exports['qbr-core']:deletePrompt("police:vehicle_"..k, vector3(v.x, v.y, v.z), Config.PromptKey, Lang:t('menu.pol_garage'), {
+            type = 'client',
+            event = 'police:client:promptVehicle',
+            args = {k},
+        })
+    end
+
+    for k,v in pairs(Config.Locations['evidence']) do
+        exports['qbr-core']:deletePrompt('evidence_prompt_' .. k, v, Config.PromptKey, 'Open Evidence Stash', {
+            type = 'client',
+            event = 'police:client:EvidenceStashDrawer',
+            args = { k },
+        })
+    end
+
+    for k,v in pairs(Config.Locations['stash']) do
+        exports['qbr-core']:deletePrompt('stash_prompt_' .. k, v, Config.PromptKey, 'Open Personal Stash', {
+            type = 'client',
+            event = 'police:client:OpenPersonalStash',
+            args = {},
+        })
+    end
+
+    for k,v in pairs(Config.Locations['armory']) do
+        exports['qbr-core']:deletePrompt('armory_prompt_' .. k, v, Config.PromptKey, Lang:t('menu.pol_armory'), {
+            type = 'client',
+            event = 'police:client:OpenArmory',
+            args = {},
+        })
+    end
+    promptsStatus = false
+end
+
+
+
 
 local function loadAnimDict(dict) -- interactions, job,
     while (not HasAnimDictLoaded(dict)) do
@@ -115,6 +216,43 @@ RegisterNetEvent('police:client:ImpoundVehicle', function(fullImpound, price)
     end
 end)
 
+-- Toggle Duty in an event.
+RegisterNetEvent('police:client:promptDuty', function()
+    exports['qbr-core']:GetPlayerData(function(PlayerData)
+        PlayerJob = PlayerData.job
+        onDuty = PlayerData.job.onduty
+        if PlayerJob.name == "police" then
+            onDuty = not onDuty
+            TriggerServerEvent("police:server:UpdateCurrentCops")
+            TriggerServerEvent("police:server:UpdateBlips")
+            TriggerServerEvent("QBCore:ToggleDuty")
+        else
+            exports['qbr-core']:Notify(9, Lang:t('error.not_lawyer'), 5000, 0, 'mp_lobby_textures', 'cross', 'COLOR_WHITE')
+        end
+    end)
+end)
+
+RegisterNetEvent('police:client:promptVehicle', function(k)
+    exports['qbr-core']:GetPlayerData(function(PlayerData)
+        PlayerJob = PlayerData.job
+        onDuty = PlayerData.job.onduty
+        local ped = PlayerPedId()
+
+        if PlayerJob.name == "police"  then
+            if IsPedInAnyVehicle(ped, false) then
+                exports['qbr-core']:DeleteVehicle(GetVehiclePedIsIn(ped))
+            else
+                MenuGarage()
+                currentGarage = k
+            end
+        else
+            exports['qbr-core']:Notify(9, Lang:t('error.not_lawyer'), 5000, 0, 'mp_lobby_textures', 'cross', 'COLOR_WHITE')
+        end
+    end)
+end)
+
+
+
 RegisterNetEvent('police:client:CheckStatus', function()
     exports['qbr-core']:GetPlayerData(function(PlayerData)
         if PlayerData.job.name == "police" then
@@ -154,12 +292,9 @@ RegisterNetEvent('police:client:EvidenceStashDrawer', function(k)
     end
 end)
 
--- Toggle Duty in an event.
-RegisterNetEvent('qb-policejob:ToggleDuty', function()
-    onDuty = not onDuty
-    TriggerServerEvent("police:server:UpdateCurrentCops")
-    TriggerServerEvent("police:server:UpdateBlips")
-    TriggerServerEvent("QBCore:ToggleDuty")
+RegisterNetEvent('police:client:TakeOutVehicle', function(data)
+    local vehicle = data.vehicle
+    TakeOutVehicle(vehicle)
 end)
 
 RegisterNetEvent('police:client:OpenPersonalStash', function()
@@ -195,6 +330,8 @@ RegisterNetEvent('police:client:OpenArmory', function()
     TriggerServerEvent("inventory:server:OpenInventory", "shop", "police", authorizedItems)
 end)
 
+
+
 -- Threads
 
 -- Toggle Duty
@@ -204,7 +341,7 @@ CreateThread(function()
     end
 
     for k, v in pairs(Config.Locations["stations"]) do
-        print(v.coords, v.label)
+        --print(v.coords, v.label)
         local StationBlip = N_0x554d9d53f696d002(1664425300, v.coords)
         SetBlipSprite(StationBlip, -693644997, 52)
         SetBlipScale(StationBlip, 0.7)
@@ -223,7 +360,7 @@ CreateThread(function()
             weaponAmmoLabel = sharedItems[weaponAmmo].label
         end
 
-        print(weaponHash, weaponName, weaponLabel, weaponAmmo, weaponAmmoLabel)
+        --print(weaponHash, weaponName, weaponLabel, weaponAmmo, weaponAmmoLabel)
 
         Config.WeaponHashes[weaponHash] = {
             weaponName = weaponName,
@@ -233,3 +370,5 @@ CreateThread(function()
         }
     end
 end)
+
+

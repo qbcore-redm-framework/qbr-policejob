@@ -1,19 +1,18 @@
 Config = {}
 
 Config.ShowBlips = true
+Config.PromptKey = 0xE30CD707 -- R
 
-Config.Objects = {
-    ["cone"] = {model = `prop_roadcone02a`, freeze = false},
-    ["barrier"] = {model = `prop_barrier_work06a`, freeze = true},
-    ["roadsign"] = {model = `prop_snow_sign_road_06g`, freeze = true},
-    ["tent"] = {model = `prop_gazebo_03`, freeze = true},
-    ["light"] = {model = `prop_worklight_03b`, freeze = true},
-}
+-- Config.Objects = {
+--     ["cone"] = {model = `prop_roadcone02a`, freeze = false},
+--     ["barrier"] = {model = `prop_barrier_work06a`, freeze = true},
+--     ["roadsign"] = {model = `prop_snow_sign_road_06g`, freeze = true},
+--     ["tent"] = {model = `prop_gazebo_03`, freeze = true},
+--     ["light"] = {model = `prop_worklight_03b`, freeze = true},
+-- }
 
 Config.MaxSpikes = 5
-
 Config.HandCuffItem = 'handcuffs'
-
 Config.LicenseRank = 2
 
 Config.Locations = {
@@ -29,6 +28,12 @@ Config.Locations = {
         [2] = vector3(2497.01, -1301.2, 48.96),
         [3] = vector3(-766.55, -1271.61, 44.05),
         [4] = vector3(-1812.43, -355.87, 164.65)
+    },
+    ["vehicle"] = {
+        [1] = vector4(-278.82, 826.41, 119.33, 7.5), -- Valentine Stable
+        [2] = vector4(2493.22, -1321.87, 48.87, 271.06), -- Saint Denis
+        [3] = vector4(-3626.53, -2596.21, -13.79, 122.21), -- Armadillo
+        [4] =vector4(-1801.48, -354.12, 164.13, 222.05) -- Strawberry
     },
     ["armory"] = {
         [1] = vector3(1361.16, -1305.7, 77.76),
@@ -48,6 +53,29 @@ Config.Locations = {
         [3] = {label = "Blackwater Police Dept.", coords = vector3(-760.47, -1269.14, 44.04)},
         [4] = {label = "Strawberry Sheriff", coords = vector3(-1810.57, -350.91, 164.66)}
     },
+}
+
+Config.AuthorizedVehicles = {
+	-- Grade 0
+	[0] = {
+		["policewagon01x"] = "Police Vagon",
+	},
+	-- Grade 1
+	[1] = {
+		["policewagon01x"] = "Police Vagon",
+	},
+	-- Grade 2
+	[2] = {
+		["policewagon01x"] = "Police Vagon",
+	},
+	-- Grade 3
+	[3] = {
+		["policewagon01x"] = "Police Vagon",
+	},
+	-- Grade 4
+	[4] = {
+		["policewagon01x"] = "Police Vagon",
+	}
 }
 
 Config.WeaponHashes = {}
