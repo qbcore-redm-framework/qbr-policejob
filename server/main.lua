@@ -432,7 +432,7 @@ RegisterNetEvent('police:server:BillPlayer', function(playerId, price)
         if OtherPlayer then
             OtherPlayer.Functions.RemoveMoney("bank", price, "paid-bills")
             TriggerEvent('qb-bossmenu:server:addAccountMoney', "police", price)
-            TriggerClientEvent('QBCore:Notify', OtherPlayer.PlayerData.source, Lang:t("info.fine_received", {fine = price}), 5000, 0, 'blips', 'blip_radius_search', 'COLOR_WHITE')
+            TriggerClientEvent('QBCore:Notify', OtherPlayer.PlayerData.source, 9, Lang:t("info.fine_received", {fine = price}), 5000, 0, 'blips', 'blip_radius_search', 'COLOR_WHITE')
         end
     end
 end)
@@ -472,7 +472,7 @@ RegisterNetEvent('police:server:SearchPlayer', function(playerId)
     local SearchedPlayer = exports['qbr-core']:GetPlayer(playerId)
     if SearchedPlayer then
         TriggerClientEvent('QBCore:Notify', src, 9, Lang:t("info.cash_found", {cash = SearchedPlayer.PlayerData.money["cash"]}), 5000, 0, 'blips', 'blip_radius_search', 'COLOR_WHITE')
-        TriggerClientEvent('QBCore:Notify', SearchedPlayer.PlayerData.source, Lang:t("info.being_searched"), 5000, 0, 'blips', 'blip_radius_search', 'COLOR_WHITE')
+        TriggerClientEvent('QBCore:Notify', SearchedPlayer.PlayerData.source, 9, Lang:t("info.being_searched"), 5000, 0, 'blips', 'blip_radius_search', 'COLOR_WHITE')
     end
 end)
 
@@ -486,7 +486,7 @@ RegisterNetEvent('police:server:SeizeCash', function(playerId)
         SearchedPlayer.Functions.RemoveMoney("cash", moneyAmount, "police-cash-seized")
         Player.Functions.AddItem("moneybag", 1, false, info)
         TriggerClientEvent('inventory:client:ItemBox', src, sharedItems["moneybag"], "add")
-        TriggerClientEvent('QBCore:Notify', SearchedPlayer.PlayerData.source, Lang:t("info.cash_confiscated"), 5000, 0, 'blips', 'blip_radius_search', 'COLOR_WHITE')
+        TriggerClientEvent('QBCore:Notify', SearchedPlayer.PlayerData.source, 9, Lang:t("info.cash_confiscated"), 5000, 0, 'blips', 'blip_radius_search', 'COLOR_WHITE')
     end
 end)
 
@@ -498,8 +498,8 @@ RegisterNetEvent('police:server:RobPlayer', function(playerId)
         local money = SearchedPlayer.PlayerData.money["cash"]
         Player.Functions.AddMoney("cash", money, "police-player-robbed")
         SearchedPlayer.Functions.RemoveMoney("cash", money, "police-player-robbed")
-        TriggerClientEvent('QBCore:Notify', SearchedPlayer.PlayerData.source, Lang:t("info.cash_robbed", {money = money}), 5000, 0, 'blips', 'blip_radius_search', 'COLOR_WHITE')
-        TriggerClientEvent('QBCore:Notify', Player.PlayerData.source, Lang:t("info.stolen_money", {stolen = money}), 5000, 0, 'blips', 'blip_radius_search', 'COLOR_WHITE')
+        TriggerClientEvent('QBCore:Notify', SearchedPlayer.PlayerData.source, 9, Lang:t("info.cash_robbed", {money = money}), 5000, 0, 'blips', 'blip_radius_search', 'COLOR_WHITE')
+        TriggerClientEvent('QBCore:Notify', Player.PlayerData.source, 9, Lang:t("info.stolen_money", {stolen = money}), 5000, 0, 'blips', 'blip_radius_search', 'COLOR_WHITE')
     end
 end)
 
