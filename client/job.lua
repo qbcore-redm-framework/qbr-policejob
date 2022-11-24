@@ -4,21 +4,6 @@ local inFingerprint = false
 local FingerPrintSessionId = nil
 
 -- Functions
--- local function DrawText3D(x, y, z, text)
---     SetTextScale(0.35, 0.35)
---     SetTextFont(4)
---     SetTextProportional(1)
---     SetTextColour(255, 255, 255, 215)
---     SetTextEntry("STRING")
---     SetTextCentre(true)
---     AddTextComponentString(text)
---     SetDrawOrigin(x,y,z, 0)
---     DrawText(0.0, 0.0)
---     local factor = (string.len(text)) / 370
---     DrawRect(0.0, 0.0+0.0125, 0.017+ factor, 0.03, 0, 0, 0, 75)
---     ClearDrawOrigin()
--- end
-
 function CreatePrompts()
     for k,v in pairs(Config.Locations['duty']) do
         exports['qbr-core']:createPrompt('duty_prompt_' .. k, v, 0xF3830D8E, 'Toggle duty status', {
@@ -204,15 +189,16 @@ CreateThread(function()
     end
 
     for k, v in pairs(Config.Locations["stations"]) do
-        print(v.coords, v.label)
         local StationBlip = N_0x554d9d53f696d002(1664425300, v.coords)
         SetBlipSprite(StationBlip, -693644997, 52)
         SetBlipScale(StationBlip, 0.7)
         Citizen.InvokeNative(0x9CB1A1623062F402, StationBlip, v.label)
         -- Citizen.ReturnResultAnyway()
     end
+
     local sharedItems = exports['qbr-core']:GetItems()
     local sharedWeapons = exports['qbr-core']:GetWeapons()
+
     for k,v in pairs(sharedWeapons) do
         local weaponName = v.name
         local weaponLabel = v.label
@@ -222,8 +208,6 @@ CreateThread(function()
             weaponAmmo = v.ammotype:lower()
             weaponAmmoLabel = sharedItems[weaponAmmo].label
         end
-
-        print(weaponHash, weaponName, weaponLabel, weaponAmmo, weaponAmmoLabel)
 
         Config.WeaponHashes[weaponHash] = {
             weaponName = weaponName,
