@@ -1,5 +1,4 @@
 -- Variables
-
 isHandcuffed = false
 cuffType = 1
 isEscorted = false
@@ -106,22 +105,6 @@ RegisterNetEvent('QBCore:Client:OnJobUpdate', function(JobInfo)
     end
     PlayerJob = JobInfo
     TriggerServerEvent("police:server:UpdateBlips")
-end)
-
-RegisterNetEvent('police:client:sendBillingMail', function(amount)
-    SetTimeout(math.random(2500, 4000), function()
-        local gender = Lang:t('info.mr')
-        if exports['qbr-core']:GetPlayerData().charinfo.gender == 1 then
-            gender = Lang:t('info.mrs')
-        end
-        local charinfo = exports['qbr-core']:GetPlayerData().charinfo
-        TriggerServerEvent('qb-phone:server:sendNewMail', {
-            sender = Lang:t('email.sender'),
-            subject = Lang:t('email.subject'),
-            message = Lang:t('email.message', {value = gender, value2 = charinfo.lastname, value3 = amount}),
-            button = {}
-        })
-    end)
 end)
 
 RegisterNetEvent('police:client:UpdateBlips', function(players)
