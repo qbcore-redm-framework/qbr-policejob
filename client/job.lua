@@ -1,4 +1,6 @@
 -- Variables
+local sharedItems = exports['qbr-core']:GetItems()
+local sharedWeapons = exports['qbr-core']:GetWeapons()
 local currentGarage = 0
 local inFingerprint = false
 local FingerPrintSessionId = nil
@@ -195,9 +197,6 @@ CreateThread(function()
         Citizen.InvokeNative(0x9CB1A1623062F402, StationBlip, v.label)
         -- Citizen.ReturnResultAnyway()
     end
-
-    local sharedItems = exports['qbr-core']:GetItems()
-    local sharedWeapons = exports['qbr-core']:GetWeapons()
 
     for k,v in pairs(sharedWeapons) do
         local weaponName = v.name

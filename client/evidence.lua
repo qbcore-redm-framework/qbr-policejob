@@ -1,4 +1,6 @@
 -- Variables
+local sharedItems = exports['qbr-core']:GetItems()
+local sharedWeapons = exports['qbr-core']:GetWeapons()
 local CurrentStatusList = {}
 local Casings = {}
 local CurrentCasing = nil
@@ -237,7 +239,7 @@ CreateThread(function()
         Wait(1)
         if CurrentCasing and CurrentCasing ~= 0 then
             local pos = GetEntityCoords(PlayerPedId())
-            if #(pos -vector3(Casings[CurrentCasing].coords.x, Casings[CurrentCasing].coords.y, Casings[CurrentCasing].coords.z)) < 1.5 then
+            if #(pos - vector3(Casings[CurrentCasing].coords.x, Casings[CurrentCasing].coords.y, Casings[CurrentCasing].coords.z)) < 1.5 then
                 local weaponHash = Casings[CurrentCasing].type
                 DrawText3D(Casings[CurrentCasing].coords.x, Casings[CurrentCasing].coords.y, Casings[CurrentCasing].coords.z, Lang:t('info.bullet_casing', {value = Config.WeaponHashes[Casings[CurrentCasing].type].weaponAmmoLabel}))
                 if IsControlJustReleased(0, 0x5415BE48) then
@@ -303,6 +305,7 @@ CreateThread(function()
                             end
                         end
                     end
+
                     if next(Blooddrops) then
                         local pos = GetEntityCoords(PlayerPedId(), true)
                         for k, v in pairs(Blooddrops) do
@@ -312,6 +315,7 @@ CreateThread(function()
                             end
                         end
                     end
+
                     if next(Fingerprints) then
                         local pos = GetEntityCoords(PlayerPedId(), true)
                         for k, v in pairs(Fingerprints) do
