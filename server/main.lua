@@ -84,7 +84,7 @@ local function CreateObjectId()
 end
 
 local function IsVehicleOwned(plate)
-    local result = MySQL.Sync.fetchScalar('SELECT plate FROM player_vehicles WHERE plate = ?', {plate})
+    local result = MySQL.scalar.await('SELECT plate FROM player_vehicles WHERE plate = ?', {plate})
     return result
 end
 
@@ -341,7 +341,7 @@ end)
 AddEventHandler('onResourceStart', function(resourceName)
     if resourceName == GetCurrentResourceName() then
         CreateThread(function()
-            MySQL.Async.execute("DELETE FROM stashitems WHERE stash='policetrash'")
+            MySQL.query.await("DELETE FROM stashitems WHERE stash='policetrash'")
         end)
     end
 end)
