@@ -1,9 +1,7 @@
 -- Variables
 local Plates = {}
 local PlayerStatus = {}
-local Casings = {}
-local BloodDrops = {}
-local FingerDrops = {}
+local Evidences ={}
 local Objects = {}
 local sharedItems = exports['qbr-core']:GetItems()
 
@@ -12,7 +10,7 @@ local function UpdateBlips()
     local dutyPlayers = {}
     local players = exports['qbr-core']:GetQBPlayers()
     for k, v in pairs(players) do
-        if (v.PlayerData.job.name == "police" or v.PlayerData.job.name == "ambulance") and v.PlayerData.job.onduty then
+        if (Config.BlipsJobs[v.PlayerData.job.name]) and v.PlayerData.job.onduty then
             local coords = GetEntityCoords(GetPlayerPed(v.PlayerData.source))
             local heading = GetEntityHeading(GetPlayerPed(v.PlayerData.source))
             dutyPlayers[#dutyPlayers+1] = {
@@ -31,56 +29,20 @@ local function UpdateBlips()
     TriggerClientEvent("police:client:UpdateBlips", -1, dutyPlayers)
 end
 
-local function CreateBloodId()
-    if BloodDrops then
-        local bloodId = math.random(10000, 99999)
-        while BloodDrops[bloodId] do
-            bloodId = math.random(10000, 99999)
-        end
-        return bloodId
-    else
-        local bloodId = math.random(10000, 99999)
-        return bloodId
+
+local function CreateUniqueId(_table)
+    local id = math.random(10000, 99999)
+    while _table[id] do
+        id = math.random(10000, 99999)
     end
+    return id
 end
 
-local function CreateFingerId()
-    if FingerDrops then
-        local fingerId = math.random(10000, 99999)
-        while FingerDrops[fingerId] do
-            fingerId = math.random(10000, 99999)
-        end
-        return fingerId
-    else
-        local fingerId = math.random(10000, 99999)
-        return fingerId
-    end
-end
-
-local function CreateCasingId()
-    if Casings then
-        local caseId = math.random(10000, 99999)
-        while Casings[caseId] do
-            caseId = math.random(10000, 99999)
-        end
-        return caseId
-    else
-        local caseId = math.random(10000, 99999)
-        return caseId
-    end
-end
-
-local function CreateObjectId()
-    if Objects then
-        local objectId = math.random(10000, 99999)
-        while Objects[objectId] do
-            objectId = math.random(10000, 99999)
-        end
-        return objectId
-    else
-        local objectId = math.random(10000, 99999)
-        return objectId
-    end
+local function DnaHash(s)
+    local h = string.gsub(s, '.', function(c)
+        return string.format('%02x', string.byte(c))
+    end)
+    return h
 end
 
 local function IsVehicleOwned(plate)
@@ -92,7 +54,7 @@ local function GetCurrentCops()
     local amount = 0
     local players = exports['qbr-core']:GetQBPlayers()
     for k, v in pairs(players) do
-        if v.PlayerData.job.name == "police" and v.PlayerData.job.onduty then
+        if Config.Law[v.PlayerData.job.name] and v.PlayerData.job.onduty then
             amount = amount + 1
         end
     end
@@ -218,25 +180,25 @@ exports['qbr-core']:AddCommand("sc", Lang:t("commands.softcuff"), {}, false, fun
     end
 end)
 
-exports['qbr-core']:AddCommand("takedna", Lang:t("commands.takedna"), {{name = "id", help = Lang:t('info.player_id')}}, true, function(source, args)
-    local src = source
-    local Player = exports['qbr-core']:GetPlayer(src)
-    local OtherPlayer = exports['qbr-core']:GetPlayer(tonumber(args[1]))
-    if ((Player.PlayerData.job.name == "police") and Player.PlayerData.job.onduty) and OtherPlayer then
-        if Player.Functions.RemoveItem("satchel", 1) then
-            local info = {
-                label = Lang:t('info.dna_sample'),
-                type = "dna",
-                dnalabel = DnaHash(OtherPlayer.PlayerData.citizenid)
-            }
-            if Player.Functions.AddItem("evidence_satchel", 1, false, info) then
-                TriggerClientEvent("inventory:client:ItemBox", src, sharedItems["evidence_satchel"], "add")
-            end
-        else
-            TriggerClientEvent('QBCore:Notify', src, 9, Lang:t("error.have_evidence_bag"), 5000, 0, 'mp_lobby_textures', 'cross', 'COLOR_WHITE')
-        end
-    end
-end)
+-- exports['qbr-core']:AddCommand("takedna", Lang:t("commands.takedna"), {{name = "id", help = Lang:t('info.player_id')}}, true, function(source, args)
+--     local src = source
+--     local Player = exports['qbr-core']:GetPlayer(src)
+--     local OtherPlayer = exports['qbr-core']:GetPlayer(tonumber(args[1]))
+--     if ((Player.PlayerData.job.name == "police") and Player.PlayerData.job.onduty) and OtherPlayer then
+--         if Player.Functions.RemoveItem("satchel", 1) then
+--             local info = {
+--                 label = Lang:t('info.dna_sample'),
+--                 ["_type"] = "dna",
+--                 dnalabel = DnaHash(OtherPlayer.PlayerData.citizenid)
+--             }
+--             if Player.Functions.AddItem("evidence_satchel", 1, false, info) then
+--                 TriggerClientEvent("inventory:client:ItemBox", src, sharedItems["evidence_satchel"], "add")
+--             end
+--         else
+--             TriggerClientEvent('QBCore:Notify', src, 9, Lang:t("error.have_evidence_bag"), 5000, 0, 'mp_lobby_textures', 'cross', 'COLOR_WHITE')
+--         end
+--     end
+-- end)
 
 -- Items
 exports['qbr-core']:CreateUseableItem("handcuffs", function(source, item)
@@ -264,18 +226,15 @@ end)
 exports['qbr-core']:CreateUseableItem("evidence_satchel", function(source, item)
     local src = source
     local Player = exports['qbr-core']:GetPlayer(src)
+    
     if Player.Functions.GetItemByName(item.name) then
-        if item.info and item.info ~= "" then
-            if item.info.type == 'dna' then
-                TriggerClientEvent('chat:addMessage', src, item.info.label .. ' | ' .. item.info.dnalabel)
-            elseif item.info.type == 'casing' then
-                TriggerClientEvent('chat:addMessage', src, item.info.label .. ' | ' .. item.info.serie .. ' - ' .. item.info.ammolabel)
-            elseif item.info.type == 'blood' then
-                TriggerClientEvent('chat:addMessage', src, item.info.label .. ' | ' .. item.info.dnalabel .. ' (' .. item.info.bloodtype .. ')')
-            elseif item.info.type == 'fingerprint' then
-                TriggerClientEvent('chat:addMessage', src, item.info.label .. ' | ' .. item.info.fingerprint)
-            end
-            print(json.encode(item.info))
+        print("HERDABASDB",json.encode(item.info))
+        if item.info and item.info ~= "" then           
+            local revealtext = item.info.revealtext
+            if not revealtext then return end
+            print("Hitting",item.info.revealtext)
+            --3 4
+            TriggerClientEvent('QBCore:Notify', src, 4  , revealtext, 2000, 0, 'hud_textures', 'check')
         end
     end
 end)
@@ -303,7 +262,7 @@ exports['qbr-core']:CreateCallback('police:GetDutyPlayers', function(source, cb)
     local dutyPlayers = {}
     local players = exports['qbr-core']:GetQBPlayers()
     for k, v in pairs(players) do
-        if v.PlayerData.job.name == "police" and v.PlayerData.job.onduty then
+        if Config.Law[v.PlayerData.job.name] and v.PlayerData.job.onduty then
             dutyPlayers[#dutyPlayers+1] = {
                 source = Player.PlayerData.source,
                 label = Player.PlayerData.metadata["callsign"],
@@ -318,7 +277,7 @@ exports['qbr-core']:CreateCallback('police:GetCops', function(source, cb)
     local amount = 0
     local players = exports['qbr-core']:GetQBPlayers()
     for k, v in pairs(players) do
-        if v.PlayerData.job.name == "police" and v.PlayerData.job.onduty then
+        if Config.Law[v.PlayerData.job.name] and v.PlayerData.job.onduty then
             amount = amount + 1
         end
     end
@@ -329,7 +288,7 @@ exports['qbr-core']:CreateCallback('police:server:IsPoliceForcePresent', functio
     local retval = false
     local players = exports['qbr-core']:GetQBPlayers()
     for k, v in pairs(players) do
-        if v.PlayerData.job.name == "police" and v.PlayerData.job.grade.level >= 2 then
+        if Config.Law[v.PlayerData.job.name] and v.PlayerData.job.grade.level >= 2 then
             retval = true
             break
         end
@@ -352,7 +311,7 @@ RegisterNetEvent('police:server:policeAlert', function(text)
     local coords = GetEntityCoords(ped)
     local players = exports['qbr-core']:GetQBPlayers()
     for k,v in pairs(players) do
-        if v.PlayerData.job.name == 'police' and v.PlayerData.job.onduty then
+        if Config.Law[v.PlayerData.job.name] and v.PlayerData.job.onduty then
             local alertData = {title = Lang:t('info.new_call'), coords = {coords.x, coords.y, coords.z}, description = text}
             TriggerClientEvent("qb-phone:client:addPoliceAlert", v.PlayerData.source, alertData)
             TriggerClientEvent('police:client:policeAlert', v.PlayerData.source, coords, text)
@@ -507,11 +466,11 @@ RegisterNetEvent('police:server:UpdateBlips', function()
     -- KEEP FOR REF BUT NOT NEEDED ANYMORE.
 end)
 
-RegisterNetEvent('police:server:spawnObject', function(type)
+RegisterNetEvent('police:server:spawnObject', function(_type)
     local src = source
-    local objectId = CreateObjectId()
-    Objects[objectId] = type
-    TriggerClientEvent("police:client:spawnObject", src, objectId, type, src)
+    local objectId = CreateUniqueId(Objects)
+    Objects[objectId] = _type
+    TriggerClientEvent("police:client:spawnObject", src, objectId, _type, src)
 end)
 
 RegisterNetEvent('police:server:deleteObject', function(objectId)
@@ -523,111 +482,115 @@ RegisterNetEvent('evidence:server:UpdateStatus', function(data)
     PlayerStatus[src] = data
 end)
 
+RegisterNetEvent('evidence:server:AddEvidence', function(categoryId, coords, drawtext, revealtext)
+    assert(categoryId, "[Server] [QBR-PoliceJob-evidence:server:AddEvidence] Missing categoryId")
+    if not Evidences[categoryId] then Evidences[categoryId] = {} end
+
+    local id = CreateUniqueId(Evidences[categoryId])    
+    local data, serverdata =  {}, {}
+    data.categoryId, serverdata.categoryId = categoryId, categoryId
+    data.id, serverdata.id = id, id
+    data.coords, serverdata.coords = coords, coords
+    data.drawtext, serverdata.drawtext = drawtext, drawtext
+    serverdata.revealtext = revealtext
+    Evidences[categoryId][id] = serverdata
+    TriggerClientEvent("evidence:client:AddEvidence", -1, data)
+end)
+
+
+RegisterNetEvent('evidence:server:CreateCasing', function(weaponHash, coords)
+    local src = source
+    local Player = exports['qbr-core']:GetPlayer(src)
+    local sharedWeapons = exports['qbr-core']:GetWeapons()
+    local weaponInfo = sharedWeapons[weaponHash]
+    local serieNumber = nil
+    if weaponInfo then
+        local weaponItem = Player.Functions.GetItemByName(weaponInfo["name"])
+        if weaponItem and weaponItem.info and weaponItem.info ~= "" then
+            serieNumber = weaponItem.info.serie
+        end
+    end
+    if not serieNumber then serieNumber = Lang:t("evidence.serial_not_visible") end
+    local weapConfig = Config.WeaponHashes[weaponHash]
+    local value = "Unknown"
+    if weapConfig then value = weapConfig.weaponAmmoLabel end
+
+    local drawtext = Lang:t("info.bullet_casing", {value = value})
+    local revealtext = Lang:t("info.casing") .. ' | ' .. serieNumber .. ' - ' .. value
+
+    TriggerEvent('evidence:server:AddEvidence', 'Casings', coords, drawtext, revealtext)
+end)
+
 RegisterNetEvent('evidence:server:CreateBloodDrop', function(citizenid, bloodtype, coords)
-    local bloodId = CreateBloodId()
-    BloodDrops[bloodId] = {
-        dna = citizenid,
-        bloodtype = bloodtype
-    }
-    TriggerClientEvent("evidence:client:AddBlooddrop", -1, bloodId, citizenid, bloodtype, coords)
+    
+    local label = Lang:t("info.blood")
+    local dnalabel = DnaHash(citizenid)
+    local bloodtype = bloodtype
+    local drawtext = Lang:t("info.blood_text", {value = dnalabel})
+    local revealtext = label .. ' | ' .. dnalabel .. ' (' .. bloodtype .. ')'
+    
+    TriggerEvent('evidence:server:AddEvidence', 'BloodDrops', coords, drawtext, revealtext)
 end)
 
 RegisterNetEvent('evidence:server:CreateFingerDrop', function(coords)
     local src = source
-    local Player = exports['qbr-core']:GetPlayer(src)
-    local fingerId = CreateFingerId()
-    FingerDrops[fingerId] = Player.PlayerData.metadata["fingerprint"]
-    TriggerClientEvent("evidence:client:AddFingerPrint", -1, fingerId, Player.PlayerData.metadata["fingerprint"], coords)
-end)
+    local Player = exports['qbr-core']:GetPlayer(src)    
+    
+    local lable = Lang:t("info.fingerprint")
+    local fingerprint = Player.PlayerData.metadata["fingerprint"]    
+    local revealtext = lable .. ' | ' .. fingerprint
+    local drawtext = Lang:t("fingerprint_text")
 
-RegisterNetEvent('evidence:server:ClearBlooddrops', function(blooddropList)
-    if blooddropList and next(blooddropList) then
-        for k, v in pairs(blooddropList) do
-            TriggerClientEvent("evidence:client:RemoveBlooddrop", -1, v)
-            BloodDrops[v] = nil
-        end
-    end
-end)
-
-RegisterNetEvent('evidence:server:AddBlooddropToInventory', function(bloodId, bloodInfo)
-    local src = source
-    local Player = exports['qbr-core']:GetPlayer(src)
-    if Player.Functions.RemoveItem("satchel", 1) then
-        if Player.Functions.AddItem("evidence_satchel", 1, false, bloodInfo) then
-            TriggerClientEvent("inventory:client:ItemBox", src, sharedItems["evidence_satchel"], "add")
-            TriggerClientEvent("evidence:client:RemoveBlooddrop", -1, bloodId)
-            BloodDrops[bloodId] = nil
-        end
-    else
-        TriggerClientEvent('QBCore:Notify', src, 9, Lang:t("error.have_evidence_bag"), 5000, 0, 'mp_lobby_textures', 'cross', 'COLOR_WHITE')
-    end
-end)
-
-RegisterNetEvent('evidence:server:AddFingerprintToInventory', function(fingerId, fingerInfo)
-    local src = source
-    local Player = exports['qbr-core']:GetPlayer(src)
-    if Player.Functions.RemoveItem("satchel", 1) then
-        if Player.Functions.AddItem("evidence_satchel", 1, false, fingerInfo) then
-            TriggerClientEvent("inventory:client:ItemBox", src, sharedItems["evidence_satchel"], "add")
-            TriggerClientEvent("evidence:client:RemoveFingerprint", -1, fingerId)
-            FingerDrops[fingerId] = nil
-        end
-    else
-        TriggerClientEvent('QBCore:Notify', src, 9, Lang:t("error.have_evidence_bag"), 5000, 0, 'mp_lobby_textures', 'cross', 'COLOR_WHITE')
-    end
-end)
-
-RegisterNetEvent('evidence:server:CreateCasing', function(weapon, coords)
-    local src = source
-    local Player = exports['qbr-core']:GetPlayer(src)
-    local casingId = CreateCasingId()
-    local sharedWeapons = exports['qbr-core']:GetWeapons()
-    local weaponInfo = sharedWeapons[weapon]
-    local serieNumber = nil
-    if weaponInfo then
-        local weaponItem = Player.Functions.GetItemByName(weaponInfo["name"])
-        if weaponItem then
-            if weaponItem.info and weaponItem.info ~= "" then
-                serieNumber = weaponItem.info.serie
-            end
-        end
-    end
-    TriggerClientEvent("evidence:client:AddCasing", -1, casingId, weapon, coords, serieNumber)
-end)
-
-RegisterNetEvent('police:server:UpdateCurrentCops', function()
-    local amount = 0
-    local players = exports['qbr-core']:GetQBPlayers()
-    for k, v in pairs(players) do
-        if v.PlayerData.job.name == "police" and v.PlayerData.job.onduty then
-            amount = amount + 1
-        end
-    end
-    TriggerClientEvent("police:SetCopCount", -1, amount)
+    TriggerEvent('evidence:server:AddEvidence', 'FingerDrops', coords, drawtext, revealtext)
 end)
 
 RegisterNetEvent('evidence:server:ClearCasings', function(casingList)
     if casingList and next(casingList) then
         for k, v in pairs(casingList) do
             TriggerClientEvent("evidence:client:RemoveCasing", -1, v)
-            Casings[v] = nil
+            Evidences.Casings[v] = nil
         end
     end
 end)
 
-RegisterNetEvent('evidence:server:AddCasingToInventory', function(casingId, casingInfo)
+RegisterNetEvent('evidence:server:ClearBlooddrops', function(blooddropList)
+    if blooddropList and next(blooddropList) then
+        for k, v in pairs(blooddropList) do
+            TriggerClientEvent("evidence:client:RemoveBlooddrop", -1, v)
+            Evidences.BloodDrops[v] = nil
+        end
+    end
+end)
+
+RegisterNetEvent('evidence:server:AddEvidenceToInventory', function(category, id, info)
     local src = source
     local Player = exports['qbr-core']:GetPlayer(src)
+    local evidences = Evidences[category]
+    if not evidences then return end
+    local evidence = evidences[id]
+    if not evidence then return end
+
     if Player.Functions.RemoveItem("satchel", 1) then
-        if Player.Functions.AddItem("evidence_satchel", 1, false, casingInfo) then
-            TriggerClientEvent("inventory:client:ItemBox", src, sharedItems["evidence_satchel"], "add")
-            TriggerClientEvent("evidence:client:RemoveCasing", -1, casingId)
-            Casings[casingId] = nil
+        if Player.Functions.AddItem("evidence_satchel", 1, false, evidence) then
+            TriggerClientEvent("inventory:client:ItemBox", src, sharedItems["evidence_satchel"], "add")            
+            TriggerClientEvent("evidence:client:RemoveEvidence", -1, category, id)
         end
     else
         TriggerClientEvent('QBCore:Notify', src, 9, Lang:t("error.have_evidence_bag"), 5000, 0, 'mp_lobby_textures', 'cross', 'COLOR_WHITE')
     end
 end)
+
+RegisterNetEvent('police:server:UpdateCurrentCops', function()
+    local amount = 0
+    local players = exports['qbr-core']:GetQBPlayers()
+    for k, v in pairs(players) do
+        if Config.Law[v.PlayerData.job.name] and v.PlayerData.job.onduty then
+            amount = amount + 1
+        end
+    end
+    TriggerClientEvent("police:SetCopCount", -1, amount)
+end)
+
 
 RegisterNetEvent('police:server:showFingerprint', function(playerId)
     local src = source
@@ -641,6 +604,18 @@ RegisterNetEvent('police:server:showFingerprintId', function(sessionId)
     local fid = Player.PlayerData.metadata["fingerprint"]
     TriggerClientEvent('police:client:showFingerprintId', sessionId, fid)
     TriggerClientEvent('police:client:showFingerprintId', src, fid)
+end)
+
+-- Hooks
+
+RegisterNetEvent('hospital:server:SyncInjuries', function(data)
+    local src = source
+    BodyParts = data.limbs
+    if not BodyParts then return end
+    local playerData = exports['qbr-core']:GetPlayer(src).PlayerData
+    if not playerData then return end
+    local coords = GetEntityCoords(GetPlayerPed(src))
+    TriggerEvent("evidence:server:CreateBloodDrop", playerData.citizenid, playerData.metadata["bloodtype"], coords)
 end)
 
 -- Threads
@@ -658,3 +633,4 @@ CreateThread(function()
         UpdateBlips()
     end
 end)
+
