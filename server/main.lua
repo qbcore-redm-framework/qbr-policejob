@@ -521,15 +521,15 @@ RegisterNetEvent('evidence:server:CreateCasing', function(weaponHash, coords)
     TriggerEvent('evidence:server:AddEvidence', 'Casings', coords, drawtext, revealtext)
 end)
 
-RegisterNetEvent('evidence:server:CreateBloodDrop', function(citizenid, bloodtype, coords)
+RegisterNetEvent('evidence:server:CreateBloodDrop', function(citizenid, bloodtype, coords) --this all could be moved into the ambulance job
     
     local label = Lang:t("info.blood")
     local dnalabel = DnaHash(citizenid)
     local bloodtype = bloodtype
     local drawtext = Lang:t("info.blood_text", {value = dnalabel})
     local revealtext = label .. ' | ' .. dnalabel .. ' (' .. bloodtype .. ')'
-    
-    TriggerEvent('evidence:server:AddEvidence', 'BloodDrops', coords, drawtext, revealtext)
+    local crds = vector3(coords.x, coords.y, coords.z - 0.9)
+    TriggerEvent('evidence:server:AddEvidence', 'BloodDrops', crds, drawtext, revealtext)
 end)
 
 RegisterNetEvent('evidence:server:CreateFingerDrop', function(coords)
