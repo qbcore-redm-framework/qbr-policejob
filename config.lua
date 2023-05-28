@@ -2,15 +2,19 @@ Config = {}
 
 Config.ShowBlips = true
 
-Config.Objects = {
-    ["cone"] = {model = `prop_roadcone02a`, freeze = false},
-    ["barrier"] = {model = `prop_barrier_work06a`, freeze = true},
-    ["roadsign"] = {model = `prop_snow_sign_road_06g`, freeze = true},
-    ["tent"] = {model = `prop_gazebo_03`, freeze = true},
-    ["light"] = {model = `prop_worklight_03b`, freeze = true},
-}
+Config.EvidenceJobs = {police = true}
+Config.BlipsJobs = {police = true, ambulance = true}
+Config.Law = {police = true, sheriff = true}
 
-Config.MaxSpikes = 5
+Config.EvidenceRange = 2.5
+
+Config.Objects = {
+    ["cone"] = {model = "prop_roadcone02a", freeze = false},
+    ["barrier"] = {model = "prop_barrier_work06a", freeze = true},
+    ["roadsign"] = {model = "prop_snow_sign_road_06g", freeze = true},
+    ["tent"] = {model = "prop_gazebo_03", freeze = true},
+    ["light"] = {model = "prop_worklight_03b", freeze = true},
+}
 
 Config.HandCuffItem = 'handcuffs'
 
@@ -33,14 +37,14 @@ Config.Locations = {
     ["armory"] = {
         [1] = vector3(1361.16, -1305.7, 77.76),
         [2] = vector3(2494.53, -1304.32, 48.95),
-        [3] = vector3(-764.86, -1272.4, 44.04),
-        [4] = vector3(-1814.01, -354.93, 164.65),
+        [3] = vector3(-764.86, -1272.43, 44.04),
+        [4] = vector3(-1813.93, -354.78, 164.65),
     },
     ["evidence"] = {
         [1] = vector3(1361.39, -1303.77, 77.77),
         [2] = vector3(2494.44, -1313.39, 48.95),
         [3] = vector3(-761.98, -1272.62, 44.05),
-        [4] = vector3(-1812.43, -355.87, 164.65)
+        [4] = vector3(-1807.17, -348.29, 164.66)
     },
     ["stations"] = {
         [1] = {label = "Sheriff", coords = vector3(1360.88, -1301.53, 77.77)},
