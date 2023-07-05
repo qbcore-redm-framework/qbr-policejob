@@ -300,7 +300,6 @@ RegisterNetEvent("QBCore:Client:OnPlayerUnloaded", function()
 end)
 
 RegisterNetEvent('QBCore:Player:SetPlayerData', function(playerData)
-    print("Job Update")
     PlayerJob = playerData.job
     local name = PlayerJob.name
     local onduty = PlayerJob.onduty
