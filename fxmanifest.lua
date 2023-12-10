@@ -6,9 +6,10 @@ description 'QBR-PoliceJob'
 version '1.0.0'
 
 shared_scripts {
+	'@qbr-core/shared/locale.lua',
+	'locales/en.lua',
+	'locales/*.lua',
     'config.lua',
-    '@qbr-core/shared/locale.lua',
-    'locales/en.lua' -- Change this to your preferred language
 }
 
 client_scripts {
