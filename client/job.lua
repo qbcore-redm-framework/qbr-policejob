@@ -204,7 +204,6 @@ CreateThread(function()
     end
 
     for k, v in pairs(Config.Locations["stations"]) do
-        print(v.coords, v.label)
         local StationBlip = N_0x554d9d53f696d002(1664425300, v.coords)
         SetBlipSprite(StationBlip, -693644997, 52)
         SetBlipScale(StationBlip, 0.7)
@@ -222,8 +221,6 @@ CreateThread(function()
             weaponAmmo = v.ammotype:lower()
             weaponAmmoLabel = sharedItems[weaponAmmo].label
         end
-
-        print(weaponHash, weaponName, weaponLabel, weaponAmmo, weaponAmmoLabel)
 
         Config.WeaponHashes[weaponHash] = {
             weaponName = weaponName,
