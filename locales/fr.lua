@@ -181,7 +181,10 @@ local Translations = {
     },
 }
 
-Lang = Locale:new({
-    phrases = Translations,
-    warnOnMissing = true
-})
+if GetConvar('qbr_locale', 'en') == 'fr' then
+    Lang = Locale:new({
+        phrases = Translations,
+        warnOnMissing = true,
+        fallbackLang = Lang,
+    })
+end

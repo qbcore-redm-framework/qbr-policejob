@@ -36,12 +36,6 @@ local WhitelistedWeapons = {
     0x126210c3,
 }
 
-
-function VarString(txt)
-    
-    return 
-end
-
 function BgDisplayText(txt, x, y)
     return Citizen.InvokeNative(0xd79334a4bb99bad1, Citizen.InvokeNative(0xFA925AC00EB830B9, 10, "LITERAL_STRING", txt, Citizen.ResultAsLong()), x, y)
 end

@@ -209,8 +209,7 @@ RegisterNetEvent('police:client:CuffPlayerSoft', function()
         if player ~= -1 and distance < 1.5 then
             local playerId = GetPlayerServerId(player)
             if not IsPedInAnyVehicle(GetPlayerPed(player)) and not IsPedInAnyVehicle(PlayerPedId()) then
-                TriggerServerEvent("police:server:CuffPlayer", playerId, true)
-                -- HandCuffAnimation()
+                TriggerServerEvent("police:server:CuffPlayer", playerId, true)                
             else
                 exports['qbr-core']:Notify(9, Lang:t("error.vehicle_cuff"), 5000, 0, 'mp_lobby_textures', 'cross', 'COLOR_WHITE')
             end
@@ -230,8 +229,7 @@ RegisterNetEvent('police:client:CuffPlayer', function()
                 if result then
                     local playerId = GetPlayerServerId(player)
                     if not IsPedInAnyVehicle(GetPlayerPed(player)) and not IsPedInAnyVehicle(PlayerPedId()) then
-                        TriggerServerEvent("police:server:CuffPlayer", playerId, false)
-                        -- HandCuffAnimation()
+                        TriggerServerEvent("police:server:CuffPlayer", playerId, false)                        
                     else
                         exports['qbr-core']:Notify(9, Lang:t("error.vehicle_cuff"), 5000, 0, 'mp_lobby_textures', 'cross', 'COLOR_WHITE')
                     end
@@ -279,14 +277,8 @@ RegisterNetEvent('police:client:GetKidnappedTarget', function(playerId)
             if not isEscorted then
                 isEscorted = true
                 draggerId = playerId
-                local dragger = GetPlayerPed(GetPlayerFromServerId(playerId))
-                -- RequestAnimDict("nm")
-
-                -- while not HasAnimDictLoaded("nm") do
-                --     Wait(10)
-                -- end
-                AttachEntityToEntity(ped, dragger, 0, 0.27, 0.15, 0.63, 0.5, 0.5, 0.0, false, false, false, false, 2, false)
-                -- TaskPlayAnim(ped, "nm", "firemans_carry", 8.0, -8.0, 100000, 33, 0, false, false, false)
+                local dragger = GetPlayerPed(GetPlayerFromServerId(playerId))               
+                AttachEntityToEntity(ped, dragger, 0, 0.27, 0.15, 0.63, 0.5, 0.5, 0.0, false, false, false, false, 2, false)                
             else
                 isEscorted = false
                 DetachEntity(ped, true, false)
@@ -301,13 +293,7 @@ RegisterNetEvent('police:client:GetKidnappedDragger', function(playerId)
     exports['qbr-core']:GetPlayerData(function(PlayerData)
         if not isEscorting then
             draggerId = playerId
-            local dragger = PlayerPedId()
-            -- RequestAnimDict("missfinale_c2mcs_1")
-
-            -- while not HasAnimDictLoaded("missfinale_c2mcs_1") do
-            --     Wait(10)
-            -- end
-            -- TaskPlayAnim(dragger, "missfinale_c2mcs_1", "fin_c2_mcs_1_camman", 8.0, -8.0, 100000, 49, 0, false, false, false)
+            local dragger = PlayerPedId()          
             isEscorting = true
         else
             local dragger = PlayerPedId()
@@ -330,12 +316,10 @@ RegisterNetEvent('police:client:GetCuffed', function(playerId, isSoftcuff)
             SetCurrentPedWeapon(ped, "WEAPON_UNARMED", true)
         end
         if not isSoftcuff then
-            cuffType = 16
-            -- GetCuffedAnimation(playerId)
+            cuffType = 16            
             exports['qbr-core']:Notify(9, Lang:t("info.cuff"), 5000, 0, 'blips', 'blip_radius_search', 'COLOR_WHITE')
         else
-            cuffType = 49
-            -- GetCuffedAnimation(playerId)
+            cuffType = 49            
             exports['qbr-core']:Notify(9, Lang:t("info.cuffed_walk"), 5000, 0, 'blips', 'blip_radius_search', 'COLOR_WHITE')
         end
     else
@@ -351,8 +335,7 @@ RegisterNetEvent('police:client:GetCuffed', function(playerId, isSoftcuff)
         DisplayRadar(true)
         if cuffType == 49 then
             FreezeEntityPosition(ped, false)
-        end
-        -- TriggerServerEvent("InteractSound_SV:PlayOnSource", "Uncuff", 0.2)
+        end        
         exports['qbr-core']:Notify(9, Lang:t("success.uncuffed"), 5000, 0, 'hud_textures', 'check', 'COLOR_WHITE')
     end
 end)
@@ -389,12 +372,7 @@ CreateThread(function()
             DisableControlAction(0, 0xE30CD707, true) -- R
         end
 
-        if isHandcuffed then
-            -- if (not IsEntityPlayingAnim(PlayerPedId(), "mp_arresting", "idle", 3) and not IsEntityPlayingAnim(PlayerPedId(), "mp_arrest_paired", "crook_p2_back_right", 3)) and not exports['qbr-core']:GetPlayerData().metadata["isdead"] then
-            --     loadAnimDict("mp_arresting")
-            --     TaskPlayAnim(PlayerPedId(), "mp_arresting", "idle", 8.0, -8, -1, cuffType, 0, 0, 0, 0)
-            -- end
-        end
+   
 
         if cuffType == 16 and isHandcuffed then  -- soft cuff
             SetEnableHandcuffs(ped, true)
