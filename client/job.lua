@@ -181,19 +181,21 @@ RegisterNetEvent('police:client:OpenArmory', function()
         slots = 30,
         items = {}
     }
-    -- local index = 1
-    for index, armoryItem in pairs(Config.Items.items) do
-        for i=1, #armoryItem.authorizedJobGrades do
-            if armoryItem.authorizedJobGrades[i] == PlayerJob.grade.level then
-                authorizedItems.items[index] = armoryItem
-                authorizedItems.items[index].slot = index
-                -- index = index + 1
+
+    for index, armoryItem in ipairs(Config.Items.items) do
+        for _, authorizedJobGrade in ipairs(armoryItem.authorizedJobGrades) do
+            if authorizedJobGrade == PlayerJob.grade.level then
+                armoryItem.slot = index
+                table.insert(authorizedItems.items, armoryItem)
+                break  -- Exit the loop after finding a match
             end
         end
     end
+
     SetWeaponSeries()
     TriggerServerEvent("inventory:server:OpenInventory", "shop", "police", authorizedItems)
 end)
+
 
 -- Threads
 

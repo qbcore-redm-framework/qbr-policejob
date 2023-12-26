@@ -9,41 +9,47 @@ onDuty = false
 local DutyBlips = {}
 
 -- Functions
-local function CreateDutyBlips(playerId, playerLabel, playerJob, playerLocation)
+local function CreateDutyBlip(playerId, playerLabel, playerJob, playerLocation)
     local ped = GetPlayerPed(playerId)
     local blip = GetBlipFromEntity(ped)
+
     if not DoesBlipExist(blip) then
         if NetworkIsPlayerActive(playerId) then
             blip = Citizen.InvokeNative(0x30822554, ped)
         else
             blip = Citizen.InvokeNative(0x554D9D53F696D002, 1664425300, playerLocation.x, playerLocation.y, playerLocation.z)
         end
+
         SetBlipSprite(blip, 54149631, 1)
         SetBlipScale(blip, 0.7)
         Citizen.InvokeNative(0x9CB1A1623062F402, blip, playerLabel)
-        DutyBlips[#DutyBlips+1] = blip
+
+        table.insert(DutyBlips, blip)
     end
 
-    if GetBlipFromEntity(PlayerPedId()) == blip then
-        -- Ensure we remove our own blip.
+    local playerBlip = GetBlipFromEntity(PlayerPedId())
+    if playerBlip and playerBlip == blip then
         RemoveBlip(blip)
     end
 end
 
 function LocalInput(text, number, window)
     AddTextEntry('FMMC_MPM_NA', text)
-    DisplayOnscreenKeyboard(1, "FMMC_MPM_NA", "", windows or "", "", "", "", number or 30)
+    DisplayOnscreenKeyboard(1, "FMMC_MPM_NA", "", window or "", "", "", "", number or 30)
 
-    while (UpdateOnscreenKeyboard() == 0) do
+    while UpdateOnscreenKeyboard() == 0 do
         DisableAllControlActions(0)
         Wait(0)
     end
 
-    if (GetOnscreenKeyboardResult()) then
-        local result = GetOnscreenKeyboardResult()
-        return result
+    local result = nil
+    if GetOnscreenKeyboardResult() then
+        result = GetOnscreenKeyboardResult()
     end
+
+    return result
 end
+
 
 -- Events
 AddEventHandler('QBCore:Client:OnPlayerLoaded', function()
@@ -51,24 +57,30 @@ AddEventHandler('QBCore:Client:OnPlayerLoaded', function()
     PlayerJob = player.job
     onDuty = player.job.onduty
     isHandcuffed = false
+
     TriggerServerEvent("QBCore:Server:SetMetaData", "ishandcuffed", false)
     TriggerServerEvent("police:server:SetHandcuffStatus", false)
     TriggerServerEvent("police:server:UpdateBlips")
     TriggerServerEvent("police:server:UpdateCurrentCops")
 
     if PlayerJob and PlayerJob.name ~= "police" then
-        if DutyBlips then
-            for k, v in pairs(DutyBlips) do
-                RemoveBlip(v)
-            end
-        end
-        DutyBlips = {}
+        ClearDutyBlips()
     end
 
     if PlayerJob and PlayerJob.name == 'police' then
         CreatePrompts()
     end
 end)
+
+function ClearDutyBlips()
+    if DutyBlips then
+        for _, blip in pairs(DutyBlips) do
+            RemoveBlip(blip)
+        end
+        DutyBlips = {}
+    end
+end
+
 
 RegisterNetEvent('QBCore:Client:OnPlayerUnload', function()
     TriggerServerEvent('police:server:UpdateBlips')
@@ -156,15 +168,14 @@ RegisterNetEvent('police:client:policeAlert', function(coords, text)
     Citizen.InvokeNative(0x662D364ABF16DE2F, blip2, GetHashKey('BLIP_MODIFIER_AREA_PULSE'))
     SetBlipScale(blip, 0.8)
     SetBlipScale(blip2, 2.0)
-    Citizen.InvokeNative(0x9CB1A1623062F402, blip, blipText)
-    while transG ~= 0 do
+    Citizen.InvokeNative(0x9CB1A1623062F402, blip, blipText)    
+    while transG > 0 do
         Wait(180 * 4)
         transG = transG - 1
-        if transG == 0 then
-            RemoveBlip(blip)
-            return
-        end
     end
+
+    RemoveBlip(blip)
+    RemoveBlip(blip2)
 end)
 
 RegisterNetEvent('police:client:SendToJail', function(time)
