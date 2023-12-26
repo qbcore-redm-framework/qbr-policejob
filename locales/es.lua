@@ -184,7 +184,7 @@ local Translations = {
         toggle_duty_status = 'Alternar estado de servicio',
         open_evidence_stash = 'Abrir inventario de pruebas',
         open_personal_stash = 'Abrir inventario personal',
-        open_armory = 'Armería Abierta',
+        open_armory = 'Abrir Armería',
     },
 }
 
