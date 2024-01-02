@@ -21,7 +21,7 @@ local FingerPrintSessionId = nil
 
 function CreatePrompts()
     for k,v in pairs(Config.Locations['duty']) do
-        exports['qbr-core']:createPrompt('duty_prompt_' .. k, v, 0xF3830D8E, 'Toggle duty status', {
+        exports['qbr-core']:createPrompt('duty_prompt_' .. k, v, 0xF3830D8E, Lang:t('prompt.toggle_duty_status'), {
             type = 'client',
             event = 'qb-policejob:ToggleDuty',
             args = {},
@@ -29,7 +29,7 @@ function CreatePrompts()
     end
 
     for k,v in pairs(Config.Locations['evidence']) do
-        exports['qbr-core']:createPrompt('evidence_prompt_' .. k, v, 0xF3830D8E, 'Open Evidence Stash', {
+        exports['qbr-core']:createPrompt('evidence_prompt_' .. k, v, 0xF3830D8E, Lang:t('prompt.open_evidence_stash'), {
             type = 'client',
             event = 'police:client:EvidenceStashDrawer',
             args = { k },
@@ -37,7 +37,7 @@ function CreatePrompts()
     end
 
     for k,v in pairs(Config.Locations['stash']) do
-        exports['qbr-core']:createPrompt('stash_prompt_' .. k, v, 0xF3830D8E, 'Open Personal Stash', {
+        exports['qbr-core']:createPrompt('stash_prompt_' .. k, v, 0xF3830D8E, Lang:t('prompt.open_personal_stash'), {
             type = 'client',
             event = 'police:client:OpenPersonalStash',
             args = {},
@@ -45,7 +45,7 @@ function CreatePrompts()
     end
 
     for k,v in pairs(Config.Locations['armory']) do
-        exports['qbr-core']:createPrompt('armory_prompt_' .. k, v, 0xF3830D8E, 'Open Armory', {
+        exports['qbr-core']:createPrompt('armory_prompt_' .. k, v, 0xF3830D8E, Lang:t('prompt.open_armory'), {
             type = 'client',
             event = 'police:client:OpenArmory',
             args = {},
@@ -91,12 +91,17 @@ local function IsArmoryWhitelist() -- being removed
 end
 
 local function SetWeaponSeries()
-    for k, v in pairs(Config.Items.items) do
+    for k, v in ipairs(Config.Items.items) do
         if k < 6 then
-            Config.Items.items[k].info.serie = tostring(exports['qbr-core']:RandomInt(2) .. exports['qbr-core']:RandomStr(3) .. exports['qbr-core']:RandomInt(1) .. exports['qbr-core']:RandomStr(2) .. exports['qbr-core']:RandomInt(3) .. exports['qbr-core']:RandomStr(4))
+            local randomInt = exports['qbr-core']:RandomInt
+            local randomStr = exports['qbr-core']:RandomStr
+
+            local serie = tostring(randomInt(2) .. randomStr(3) .. randomInt(1) .. randomStr(2) .. randomInt(3) .. randomStr(4))
+            Config.Items.items[k].info.serie = serie
         end
     end
 end
+
 
 RegisterNetEvent('police:client:ImpoundVehicle', function(fullImpound, price)
     local vehicle = exports['qbr-core']:GetClosestVehicle()
@@ -181,19 +186,21 @@ RegisterNetEvent('police:client:OpenArmory', function()
         slots = 30,
         items = {}
     }
-    -- local index = 1
-    for index, armoryItem in pairs(Config.Items.items) do
-        for i=1, #armoryItem.authorizedJobGrades do
-            if armoryItem.authorizedJobGrades[i] == PlayerJob.grade.level then
-                authorizedItems.items[index] = armoryItem
-                authorizedItems.items[index].slot = index
-                -- index = index + 1
+
+    for index, armoryItem in ipairs(Config.Items.items) do
+        for _, authorizedJobGrade in ipairs(armoryItem.authorizedJobGrades) do
+            if authorizedJobGrade == PlayerJob.grade.level then
+                armoryItem.slot = index
+                table.insert(authorizedItems.items, armoryItem)
+                break  -- Exit the loop after finding a match
             end
         end
     end
+
     SetWeaponSeries()
     TriggerServerEvent("inventory:server:OpenInventory", "shop", "police", authorizedItems)
 end)
+
 
 -- Threads
 

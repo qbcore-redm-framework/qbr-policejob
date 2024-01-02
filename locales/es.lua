@@ -180,6 +180,12 @@ local Translations = {
         place_object = 'Colocando objeto..',
         remove_object = 'Eliminando objeto..',
     },
+    prompt = {
+        toggle_duty_status = 'Alternar estado de servicio',
+        open_evidence_stash = 'Abrir inventario de pruebas',
+        open_personal_stash = 'Abrir inventario personal',
+        open_armory = 'Abrir Armería',
+    },
 }
 
 if GetConvar('qbr_locale', 'en') == 'es' then

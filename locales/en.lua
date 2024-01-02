@@ -180,6 +180,12 @@ local Translations = {
         place_object = 'Placing object..',
         remove_object = 'Removing object..',
     },
+    prompt = {
+        toggle_duty_status = 'Toggle duty status',
+        open_evidence_stash = 'Open Evidence Stash',
+        open_personal_stash = 'Open Personal Stash',
+        open_armory = 'Open Armory',
+    },
 }
 
 Lang = Locale:new({
